@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Route Finder (BFS) — Wayfarer</title>
+  <meta name="description" content="Calculate travel routes with the minimum transit hops using Breadth-First Search on a travel connection network graph.">
+  <link rel="stylesheet" href="css/wayfarer-clean.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300A6B2'><path d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z'/></svg>">
+</head>
+<body>
+  <header class="navbar" id="mainNav"></header>
+
+  <main class="main-wrapper">
+    <div style="margin-bottom: 2rem;">
+      <span class="badge badge-accent" style="margin-bottom: 0.5rem;">Smart Transit Routing</span>
+      <h1 class="page-title">Route Finder</h1>
+      <p class="page-subtitle">Find travel routes with the minimum transit connections using Breadth-First Search (BFS) graph traversal.</p>
+    </div>
+
+    <!-- Clean Traveler Info Banner -->
+    <div style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-aqua-tint); border: 1px solid var(--color-primary-border); border-radius: var(--radius-sm); padding: 0.85rem 1.25rem; margin-bottom: 2rem; font-size: 0.9rem; color: var(--color-text-main);">
+      <div>
+        <strong>Fewest Connections:</strong> Our route planner evaluates transit network connections using Breadth-First Search to find the voyage with the minimum number of transit hops.
+      </div>
+      <a href="dsa.html#sectionGraphBFS" style="color: var(--color-primary); font-weight: 600; white-space: nowrap; margin-left: 1rem;">
+        View Graph Details &rarr;
+      </a>
+    </div>
+
+    <!-- Route Selector Form Card -->
+    <div class="card" style="margin-bottom: 2.25rem; padding: 1.75rem;">
+      <form id="routeForm">
+        <div class="route-search-grid">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" for="sourceSelect">Starting Origin Destination</label>
+            <select id="sourceSelect" class="form-select" required>
+              <option value="">Select origin destination...</option>
+            </select>
+          </div>
+
+          <div class="swap-col" style="padding-bottom: 0.2rem;">
+            <button type="button" id="swapBtn" class="btn btn-secondary btn-icon-only" title="Swap Origin and Target">
+              ⇄
+            </button>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" for="targetSelect">Target Destination</label>
+            <select id="targetSelect" class="form-select" required>
+              <option value="">Select target destination...</option>
+            </select>
+          </div>
+
+          <div class="submit-col" style="padding-bottom: 0.2rem;">
+            <button type="submit" id="findRouteBtn" class="btn btn-primary" style="white-space: nowrap; padding: 0.72rem 1.6rem;">
+              Calculate Route (BFS) &rarr;
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Results Area -->
+    <div id="routeResultsArea" style="display: none; margin-bottom: 3.5rem;">
+      <!-- Metrics Summary Bar -->
+      <div class="card metrics-summary-bar" style="margin-bottom: 2rem; background: var(--bg-card-subtle);">
+        <div>
+          <span class="badge badge-accent">Optimal BFS Route Found</span>
+          <h2 class="title-serif" id="resultRouteTitle" style="font-size: 1.8rem; color: var(--color-primary); margin: 0.35rem 0 0.2rem;">
+            Route Traversal
+          </h2>
+          <p id="resultRouteDesc" class="text-muted" style="margin-bottom: 0; font-size: 0.95rem;">
+            Fewest transit connections computed via Breadth-First Search.
+          </p>
+        </div>
+
+        <div class="metrics-stats-group">
+          <div>
+            <div style="font-size: 0.78rem; color: var(--color-text-muted); text-transform: uppercase; font-weight: 600;">Transit Hops</div>
+            <div id="statHops" style="font-size: 1.6rem; font-weight: 700; color: var(--color-primary);">0</div>
+          </div>
+          <div>
+            <div style="font-size: 0.78rem; color: var(--color-text-muted); text-transform: uppercase; font-weight: 600;">Total Distance</div>
+            <div id="statDistance" style="font-size: 1.6rem; font-weight: 700; color: var(--color-primary);">0 km</div>
+          </div>
+          <div>
+            <div style="font-size: 0.78rem; color: var(--color-text-muted); text-transform: uppercase; font-weight: 600;">Est. Transit Cost</div>
+            <div id="statCost" style="font-size: 1.6rem; font-weight: 700; color: var(--color-accent);">$0.00</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step-by-Step Pathway Timeline -->
+      <div class="route-sequence" id="stepPathwayContainer"></div>
+    </div>
+
+    <!-- Route Status Alert Message -->
+    <div id="routeStatusMessage" class="alert" style="display: none; margin-bottom: 3rem;"></div>
+  </main>
+
+  <footer class="footer"></footer>
+
+  <script src="js/wayfarer-api.js"></script>
+  <script src="js/wayfarer-ui.js"></script>
+  <script>
+    let destinationMap = {};
+    let destinationsList = [];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await WayfarerUI.initNavbar('routes');
+      WayfarerUI.initFooter();
+
+      await loadDestinations();
+      initForm();
+    });
+
+    async function loadDestinations() {
+      try {
+        const dests = await WayfarerAPI.getDestinations();
+        destinationsList = Array.isArray(dests) ? dests : [];
+
+        const sourceSelect = document.getElementById('sourceSelect');
+        const targetSelect = document.getElementById('targetSelect');
+
+        let options = '<option value="">Choose a destination...</option>';
+        destinationsList.forEach(d => {
+          destinationMap[d.destinationCode] = d;
+          options += `<option value="${d.destinationCode}">${d.destinationCode} &bull; ${WayfarerUI.escape(d.name)} (${WayfarerUI.escape(d.country)})</option>`;
+        });
+
+        sourceSelect.innerHTML = options;
+        targetSelect.innerHTML = options;
+
+        if (destinationsList.length >= 2) {
+          sourceSelect.selectedIndex = 1;
+          targetSelect.selectedIndex = 2;
+        }
+      } catch (err) {
+        showMessage('Failed to load destinations: ' + err.message, false);
+      }
+    }
+
+    function initForm() {
+      const form = document.getElementById('routeForm');
+      const swapBtn = document.getElementById('swapBtn');
+      const sourceSelect = document.getElementById('sourceSelect');
+      const targetSelect = document.getElementById('targetSelect');
+
+      swapBtn.addEventListener('click', () => {
+        const temp = sourceSelect.value;
+        sourceSelect.value = targetSelect.value;
+        targetSelect.value = temp;
+      });
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const sourceCode = sourceSelect.value;
+        const targetCode = targetSelect.value;
+        const btn = document.getElementById('findRouteBtn');
+
+        if (!sourceCode || !targetCode) {
+          showMessage('Please select both an origin and target destination.', false);
+          return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Executing BFS...';
+        hideMessage();
+        document.getElementById('routeResultsArea').style.display = 'none';
+
+        try {
+          const res = await WayfarerAPI.findBfsRoute(sourceCode, targetCode);
+          if (res && res.success) {
+            renderRouteResult(res);
+          } else {
+            showMessage(res.message || 'No connecting route exists between the selected destinations in the transit graph.', false);
+          }
+        } catch (err) {
+          showMessage('Error executing BFS algorithm: ' + err.message, false);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Calculate Route (BFS) \u2192';
+        }
+      });
+    }
+
+    function renderRouteResult(res) {
+      const resultsArea = document.getElementById('routeResultsArea');
+      resultsArea.style.display = 'block';
+
+      const sourceDest = destinationMap[res.sourceCode] || { name: res.sourceCode, country: '' };
+      const targetDest = destinationMap[res.targetCode] || { name: res.targetCode, country: '' };
+
+      document.getElementById('resultRouteTitle').textContent = 
+        `${sourceDest.name} \u2192 ${targetDest.name}`;
+      document.getElementById('resultRouteDesc').textContent = 
+        res.message || 'Fewest connections path computed via Java BFS algorithm.';
+
+      document.getElementById('statHops').textContent = res.connectionCount || 0;
+      document.getElementById('statDistance').textContent = `${(res.totalDistanceKm || 0).toLocaleString()} km`;
+      document.getElementById('statCost').textContent = WayfarerUI.formatMoney(res.totalEstimatedCost);
+
+      const pathway = document.getElementById('stepPathwayContainer');
+      const pathCodes = res.path || [];
+
+      if (pathCodes.length <= 1) {
+        pathway.innerHTML = `
+          <div class="route-step-card start-step">
+            <div class="stop-order-badge">1</div>
+            <div>
+              <div style="font-weight: 700; color: var(--color-primary); font-size: 1.15rem;">${WayfarerUI.escape(sourceDest.name)}</div>
+              <div style="font-size: 0.88rem; color: var(--color-text-muted);">Origin and target are identical. 0 transit hops required.</div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      pathway.innerHTML = pathCodes.map((code, idx) => {
+        const dest = destinationMap[code] || { name: code, country: '', category: 'Travel' };
+        const isStart = idx === 0;
+        const isEnd = idx === pathCodes.length - 1;
+        const step = (res.steps && res.steps[idx - 1]) ? res.steps[idx - 1] : null;
+        const imgUrl = WayfarerUI.getDestinationImage(dest);
+
+        return `
+          <div>
+            ${step ? `
+              <div class="transit-edge-indicator">
+                <span>✈️ Transit Leg: <strong>${step.distanceKm} km</strong></span>
+                <span>💰 Est. Transit Cost: <strong>${WayfarerUI.formatMoney(step.estimatedCost)}</strong></span>
+                ${step.estimatedMinutes ? `<span>⏱️ ~${Math.round(step.estimatedMinutes / 60)} hrs travel</span>` : ''}
+              </div>
+            ` : ''}
+
+            <div class="route-step-card ${isStart ? 'start-step' : ''} ${isEnd ? 'target-step' : ''}">
+              <div class="stop-order-badge" style="background: ${isStart ? 'var(--color-primary)' : isEnd ? 'var(--color-accent)' : 'var(--color-text-muted)'};">
+                ${idx + 1}
+              </div>
+              <img src="${imgUrl}" alt="${WayfarerUI.escape(dest.name)}" class="stop-thumb" onerror="this.src='${WayfarerUI.DEFAULT_IMAGES.default}'">
+              <div style="flex: 1; min-width: 0;">
+                <div style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+                  <h3 class="title-serif" style="font-size: 1.15rem; margin-bottom: 0;">${WayfarerUI.escape(dest.name)}</h3>
+                  ${isStart ? '<span class="badge badge-primary">Starting Origin</span>' : ''}
+                  ${isEnd ? '<span class="badge badge-accent">Final Target</span>' : ''}
+                </div>
+                <div style="font-size: 0.85rem; color: var(--color-text-muted); margin-top: 0.2rem;">
+                  📍 ${WayfarerUI.escape(dest.city ? `${dest.city}, ${dest.country}` : dest.country)} &bull; Code: <code>${code}</code>
+                </div>
+              </div>
+              <a href="explore.html?query=${encodeURIComponent(dest.name)}" class="btn btn-secondary btn-sm" title="View destination catalog details">
+                View
+              </a>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function showMessage(msg, isSuccess) {
+      const el = document.getElementById('routeStatusMessage');
+      el.textContent = msg;
+      el.className = 'alert ' + (isSuccess ? 'alert-success' : 'alert-danger');
+      el.style.display = 'flex';
+    }
+
+    function hideMessage() {
+      document.getElementById('routeStatusMessage').style.display = 'none';
+    }
+  </script>
+</body>
+</html>

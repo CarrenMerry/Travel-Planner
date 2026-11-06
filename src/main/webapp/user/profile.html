@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile &amp; Settings &bull; Wayfarer</title>
+  <link rel="stylesheet" href="../css/wayfarer.css">
+  <style>
+    .profile-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-lg);
+      padding: 36px;
+      max-width: 640px;
+      box-shadow: var(--shadow-sm);
+    }
+    .profile-hero {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .profile-avatar-lg {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--primary-forest);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 700;
+    }
+    .profile-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border-light);
+      font-size: 14px;
+    }
+    .profile-row:last-child {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="wf-portal-layout">
+    <!-- SIDEBAR -->
+    <aside class="wf-sidebar">
+      <div class="wf-sidebar-header">
+        <div class="wf-brand">
+          <div class="wf-brand-icon">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#fff" stroke-width="2.2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+          <div>
+            <div class="wf-brand-title">Wayfarer</div>
+            <div class="wf-brand-tag">Traveler Workspace</div>
+          </div>
+        </div>
+      </div>
+
+      <ul class="wf-sidebar-nav">
+        <li class="wf-nav-item"><a href="dashboard.html" class="wf-nav-link"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Dashboard</a></li>
+        <li class="wf-nav-item"><a href="explore.html" class="wf-nav-link"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>Explore Destinations</a></li>
+        <li class="wf-nav-item"><a href="itineraries.html" class="wf-nav-link"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>My Itineraries</a></li>
+        <li class="wf-nav-item"><a href="itinerary-planner.html" class="wf-nav-link"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>Itinerary Planner (DSA)</a></li>
+        <li class="wf-nav-item"><a href="route-planner.html" class="wf-nav-link"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="19" r="3"/><circle cx="18" cy="5" r="3"/><path d="M12 19h4.5a3.5 3.5 0 0 0 0-7h-9a3.5 3.5 0 0 1 0-7H12"/></svg>BFS Route Finder</a></li>
+        <li class="wf-nav-item"><a href="recommendations.html" class="wf-nav-link"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Smart Recommendations</a></li>
+        <li class="wf-nav-item"><a href="profile.html" class="wf-nav-link active"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profile &amp; Settings</a></li>
+      </ul>
+
+      <div class="wf-sidebar-footer">
+        <div class="wf-user-bar">
+          <div class="wf-user-info">
+            <div class="wf-user-avatar wf-current-user-avatar">W</div>
+            <div class="wf-user-details">
+              <div class="wf-user-name wf-current-user-name">Traveler</div>
+              <div class="wf-user-role">Traveler Account</div>
+            </div>
+          </div>
+          <button onclick="Wayfarer.logout()" title="Sign Out" style="background:none; border:none; cursor:pointer; color:#8da497; padding:4px;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="wf-main-content">
+      <header class="wf-topbar">
+        <div>
+          <h1 style="font-size:24px;">Profile &amp; Settings</h1>
+          <p style="font-size:13px; color:var(--text-muted);">Manage your account preferences and session credentials.</p>
+        </div>
+        <button class="wf-btn wf-btn-danger wf-btn-sm" onclick="Wayfarer.logout()">
+          Sign Out of Wayfarer
+        </button>
+      </header>
+
+      <div class="wf-content-container">
+        <div class="profile-card">
+          <div class="profile-hero">
+            <div class="profile-avatar-lg wf-current-user-avatar">W</div>
+            <div>
+              <h2 style="font-size:22px; color:var(--primary-dark);" class="wf-current-user-name">Traveler Name</h2>
+              <div style="font-size:13px; color:var(--text-muted);" class="wf-current-user-email">email@example.com</div>
+              <span class="wf-badge wf-badge-sage" style="margin-top:6px;" id="profile-role-badge">USER</span>
+            </div>
+          </div>
+
+          <div class="profile-row">
+            <span style="color:var(--text-muted);">Account ID</span>
+            <code style="font-family:var(--font-mono); font-weight:bold;" id="profile-id">#1</code>
+          </div>
+          <div class="profile-row">
+            <span style="color:var(--text-muted);">Account Type</span>
+            <strong id="profile-role">Standard Traveler</strong>
+          </div>
+          <div class="profile-row">
+            <span style="color:var(--text-muted);">Total Itineraries Saved</span>
+            <strong id="profile-itinerary-count">0</strong>
+          </div>
+          <div class="profile-row">
+            <span style="color:var(--text-muted);">Security Standard</span>
+            <span>BCrypt / SHA-256 Compatibility Layer</span>
+          </div>
+          <div class="profile-row">
+            <span style="color:var(--text-muted);">Database Persistence</span>
+            <span>MySQL: <code>smart_travel_planner.users</code></span>
+          </div>
+
+          <div style="margin-top:32px; display:flex; gap:12px;">
+            <a href="itineraries.html" class="wf-btn wf-btn-primary">View My Itineraries</a>
+            <button class="wf-btn wf-btn-secondary" onclick="Wayfarer.logout()">Sign Out</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/wayfarer-api.js"></script>
+  <script src="../js/wayfarer-common.js"></script>
+  <script>
+    (async () => {
+      await Wayfarer.init('USER');
+
+      try {
+        const auth = await WayfarerAPI.getMe();
+        if (auth.authenticated) {
+          document.getElementById('profile-id').textContent = `#${auth.id || '1'}`;
+          document.getElementById('profile-role-badge').textContent = auth.role || 'USER';
+          document.getElementById('profile-role').textContent = auth.isAdmin ? 'Administrator' : 'Standard Traveler';
+        }
+
+        const its = await WayfarerAPI.getUserItineraries();
+        document.getElementById('profile-itinerary-count').textContent = its ? its.length : 0;
+      } catch (e) {
+        console.error(e);
+      }
+    })();
+  </script>
+</body>
+</html>

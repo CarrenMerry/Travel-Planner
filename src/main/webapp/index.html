@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wayfarer — Your Dream Vacation Awaits</title>
+  <link rel="stylesheet" href="css/wayfarer-clean.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300A6B2'><path d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z'/></svg>">
+</head>
+<body>
+  <!-- Transparent Header (becomes frosted on scroll) -->
+  <header class="navbar navbar-transparent" id="mainNav"></header>
+
+  <!-- Section 1: Hero Section with Coastal Island Photography -->
+  <section class="hero" style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=85');">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <div class="hero-subtitle-hand">Explore the World With Us</div>
+      <h1 class="hero-title">Your Dream Vacation Awaits</h1>
+      <p class="hero-desc">
+        Discover breathtaking tropical getaways, organize custom journeys with pointer-ordered stops, and calculate the most efficient transit routes.
+      </p>
+
+      <!-- Central Travel Search Panel with Functional Tabs -->
+      <div class="search-panel">
+        <div class="search-tabs">
+          <button class="search-tab-btn active" id="tabBtnPlan" data-tab="planTab">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10H12V2z"></path><path d="M12 12 2.1 12.5"></path></svg>
+            Plan a Trip
+          </button>
+          <button class="search-tab-btn" id="tabBtnRoute" data-tab="routeTab">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            Route Finder (BFS)
+          </button>
+          <button class="search-tab-btn" id="tabBtnExplore" data-tab="exploreTab">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            Explore Catalog
+          </button>
+        </div>
+
+        <div class="search-tab-content">
+          <!-- Tab 1: Plan a Trip Form -->
+          <form id="heroPlanForm" style="display: block;">
+            <div class="grid-4" style="gap: 1rem; align-items: flex-end;">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label" for="heroStartSelect">Starting Hub</label>
+                <select id="heroStartSelect" class="form-select" required>
+                  <option value="">Select origin...</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label" for="heroCategorySelect">Travel Theme</label>
+                <select id="heroCategorySelect" class="form-select">
+                  <option value="">Any Travel Theme</option>
+                  <option value="Relaxation">Relaxation & Beaches</option>
+                  <option value="Adventure">Adventure & Outdoors</option>
+                  <option value="Cultural">Cultural Heritage</option>
+                  <option value="Historical">Historical Wonders</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label" for="heroBudgetInput">Target Budget ($)</label>
+                <input type="number" id="heroBudgetInput" class="form-control" placeholder="e.g. 3500" value="3500" min="500" step="250">
+              </div>
+              <div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; height: 46px;">
+                  Plan My Trip &rarr;
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <!-- Tab 2: BFS Route Finder Form -->
+          <form id="heroRouteForm" style="display: none;">
+            <div class="grid-3" style="gap: 1.25rem; align-items: flex-end;">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label" for="heroRouteOrigin">Origin Destination</label>
+                <select id="heroRouteOrigin" class="form-select" required></select>
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label" for="heroRouteTarget">Target Destination</label>
+                <select id="heroRouteTarget" class="form-select" required></select>
+              </div>
+              <div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; height: 46px;">
+                  Find Route (BFS) &rarr;
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <!-- Tab 3: Explore Destinations Form -->
+          <form id="heroExploreForm" style="display: none;">
+            <div class="grid-3" style="gap: 1.25rem; align-items: flex-end;">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label" for="heroExploreCategory">Destination Category</label>
+                <select id="heroExploreCategory" class="form-select">
+                  <option value="">All Categories</option>
+                  <option value="Relaxation">Relaxation</option>
+                  <option value="Adventure">Adventure</option>
+                  <option value="Cultural">Cultural</option>
+                  <option value="Historical">Historical</option>
+                </select>
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label" for="heroExploreSearch">Keywords / City</label>
+                <input type="text" id="heroExploreSearch" class="form-control" placeholder="e.g. Bali, Paris, Tokyo...">
+              </div>
+              <div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; height: 46px;">
+                  Search Destinations &rarr;
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 2: Popular Destinations Horizontal Carousel -->
+  <section style="padding: 5rem 1.5rem 3.5rem; max-width: 1240px; margin: 0 auto; width: 100%;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+      <div>
+        <div class="subtitle-hand" style="font-size: 1.5rem; color: var(--color-primary); margin-bottom: 0.2rem;">Inspiring Escapes</div>
+        <h2 class="title-serif" style="font-size: 2.3rem; color: var(--color-navy); margin-bottom: 0.25rem;">Popular Destinations</h2>
+        <p class="text-muted" style="font-size: 1.02rem; margin-bottom: 0;">
+          Curated getaways loaded directly from our live destinations catalog.
+        </p>
+      </div>
+      <a href="explore.html" class="btn btn-secondary">Explore All Destinations &rarr;</a>
+    </div>
+
+    <!-- Carousel Component -->
+    <div class="carousel-wrap">
+      <button class="carousel-nav-btn carousel-nav-prev" id="carouselPrevBtn" aria-label="Previous Destinations">&larr;</button>
+      <div class="carousel-track" id="popularCarouselTrack">
+        <div style="padding: 3rem; text-align: center; color: var(--color-text-muted); width: 100%;">
+          Loading destinations from database...
+        </div>
+      </div>
+      <button class="carousel-nav-btn carousel-nav-next" id="carouselNextBtn" aria-label="Next Destinations">&rarr;</button>
+    </div>
+  </section>
+
+  <!-- Section 3: Travel Categories -->
+  <section style="padding: 3.5rem 1.5rem 4rem; background-color: var(--bg-card-subtle);">
+    <div style="max-width: 1240px; margin: 0 auto;">
+      <div class="text-center" style="margin-bottom: 2rem;">
+        <div class="subtitle-hand" style="font-size: 1.5rem; color: var(--color-primary); margin-bottom: 0.2rem;">Choose Your Journey</div>
+        <h2 class="title-serif" style="font-size: 2.2rem; color: var(--color-navy); margin-bottom: 0.35rem;">Browse by Travel Interest</h2>
+        <p class="text-muted" style="max-width: 580px; margin: 0 auto;">
+          Select a category to filter authentic destinations matching your ideal vacation style.
+        </p>
+      </div>
+
+      <div class="category-grid">
+        <!-- Category: Relaxation -->
+        <a href="explore.html?category=Relaxation" class="category-card">
+          <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80" alt="Relaxation">
+          <div class="category-overlay"></div>
+          <div class="category-info">
+            <div class="category-title">Relaxation</div>
+            <div style="font-size: 0.8rem; color: var(--color-tropical-aqua);">Tropical &bull; Beaches</div>
+          </div>
+        </a>
+
+        <!-- Category: Adventure -->
+        <a href="explore.html?category=Adventure" class="category-card">
+          <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80" alt="Adventure">
+          <div class="category-overlay"></div>
+          <div class="category-info">
+            <div class="category-title">Adventure</div>
+            <div style="font-size: 0.8rem; color: var(--color-tropical-aqua);">Hiking &bull; Coastlines</div>
+          </div>
+        </a>
+
+        <!-- Category: Cultural -->
+        <a href="explore.html?category=Cultural" class="category-card">
+          <img src="https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=600&q=80" alt="Cultural">
+          <div class="category-overlay"></div>
+          <div class="category-info">
+            <div class="category-title">Cultural</div>
+            <div style="font-size: 0.8rem; color: var(--color-tropical-aqua);">Temples &bull; Traditions</div>
+          </div>
+        </a>
+
+        <!-- Category: Historical -->
+        <a href="explore.html?category=Historical" class="category-card">
+          <img src="https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto=format&fit=crop&w=600&q=80" alt="Historical">
+          <div class="category-overlay"></div>
+          <div class="category-info">
+            <div class="category-title">Historical</div>
+            <div style="font-size: 0.8rem; color: var(--color-tropical-aqua);">Ancient Ruins &bull; Sights</div>
+          </div>
+        </a>
+
+        <!-- Category: Nature -->
+        <a href="explore.html?category=Relaxation" class="category-card">
+          <img src="https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=600&q=80" alt="Nature">
+          <div class="category-overlay"></div>
+          <div class="category-info">
+            <div class="category-title">Nature</div>
+            <div style="font-size: 0.8rem; color: var(--color-tropical-aqua);">Lagoons &bull; Oceans</div>
+          </div>
+        </a>
+
+        <!-- Category: City Escapes -->
+        <a href="explore.html?category=Cultural" class="category-card">
+          <img src="https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto=format&fit=crop&w=600&q=80" alt="City Escapes">
+          <div class="category-overlay"></div>
+          <div class="category-info">
+            <div class="category-title">City Escapes</div>
+            <div style="font-size: 0.8rem; color: var(--color-tropical-aqua);">Skylines &bull; Cuisine</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 4: Why Travel with Wayfarer? -->
+  <section style="padding: 5rem 1.5rem; max-width: 1240px; margin: 0 auto; width: 100%;">
+    <div class="text-center" style="margin-bottom: 2.5rem;">
+      <div class="subtitle-hand" style="font-size: 1.5rem; color: var(--color-primary); margin-bottom: 0.2rem;">Seamless Exploration</div>
+      <h2 class="title-serif" style="font-size: 2.3rem; color: var(--color-navy); margin-bottom: 0.35rem;">Why Plan With Wayfarer?</h2>
+      <p class="text-muted" style="max-width: 620px; margin: 0 auto;">
+        We combine holiday booking simplicity with computer science algorithms to guarantee a smooth, cost-efficient travel experience.
+      </p>
+    </div>
+
+    <div class="features-grid">
+      <!-- Feature 1 -->
+      <div class="feature-card">
+        <div class="feature-icon-box">🧭</div>
+        <h3 class="feature-title">Personalized Itineraries</h3>
+        <p class="feature-desc">
+          Organize stops in deterministic sequential order. Reorder stops instantly with atomic pointer swaps powered by our custom linked list.
+        </p>
+      </div>
+
+      <!-- Feature 2 -->
+      <div class="feature-card">
+        <div class="feature-icon-box">💰</div>
+        <h3 class="feature-title">Budget-Friendly Planning</h3>
+        <p class="feature-desc">
+          Live cost tracking against your target budget. Know your remaining balance before finalizing every stop of your journey.
+        </p>
+      </div>
+
+      <!-- Feature 3 -->
+      <div class="feature-card">
+        <div class="feature-icon-box">⚡</div>
+        <h3 class="feature-title">Smart Route Planning</h3>
+        <p class="feature-desc">
+          Automated transit optimization finding the path with the fewest connections using our Breadth-First Search graph algorithm.
+        </p>
+      </div>
+
+      <!-- Feature 4 -->
+      <div class="feature-card">
+        <div class="feature-icon-box">🏝️</div>
+        <h3 class="feature-title">Easy Trip Management</h3>
+        <p class="feature-desc">
+          Save, edit, and update your travel plans anytime. Custom stop notes, duration totals, and one-click voyage organization.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 5: Curated Travel Inspiration -->
+  <section style="padding: 4rem 1.5rem 5rem; background: var(--bg-aqua-tint);">
+    <div style="max-width: 1240px; margin: 0 auto;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
+        <div>
+          <div class="subtitle-hand" style="font-size: 1.5rem; color: var(--color-primary); margin-bottom: 0.2rem;">Curated Wonders</div>
+          <h2 class="title-serif" style="font-size: 2.2rem; color: var(--color-navy); margin-bottom: 0.25rem;">Featured Journeys</h2>
+          <p class="text-muted" style="margin-bottom: 0;">Hand-picked destinations for memorable international journeys.</p>
+        </div>
+        <a href="recommendations.html" class="btn btn-secondary">Get Smart Recommendations &rarr;</a>
+      </div>
+
+      <div class="grid-3" id="featuredGrid">
+        <div style="grid-column: 1 / -1; padding: 2.5rem; text-align: center; color: var(--color-text-muted);">
+          Loading curated getaways...
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 6: Call to Action -->
+  <section style="position: relative; padding: 6rem 1.5rem; background-image: url('https://images.unsplash.com/photo-1512100356356-de1b84283e18?auto=format&fit=crop&w=2000&q=85'); background-size: cover; background-position: center; text-align: center; color: #FFFFFF; overflow: hidden;">
+    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(180deg, rgba(24, 59, 67, 0.7) 0%, rgba(8, 124, 136, 0.8) 100%); z-index: 1;"></div>
+    <div style="position: relative; z-index: 2; max-width: 680px; margin: 0 auto;">
+      <div class="subtitle-hand" style="color: var(--color-tropical-aqua); font-size: 2.2rem; margin-bottom: 0.25rem;">Start Your Story</div>
+      <h2 class="title-serif" style="font-size: 2.8rem; color: #FFFFFF; line-height: 1.2; margin-bottom: 1rem;">
+        Your Next Adventure Starts Here
+      </h2>
+      <p style="font-size: 1.15rem; color: rgba(255, 255, 255, 0.9); margin-bottom: 2rem;">
+        Craft custom itineraries, explore scenic destinations, and calculate minimum-hop routes in seconds.
+      </p>
+      <div class="btn-group" style="justify-content: center;">
+        <a href="itinerary-builder.html" class="btn btn-primary btn-lg">Start Planning Now &rarr;</a>
+        <a href="explore.html" class="btn btn-secondary btn-lg" style="background: rgba(255,255,255,0.15); color: #fff; border-color: rgba(255,255,255,0.4);">Browse Destinations</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Destination Details Modal -->
+  <div class="modal-backdrop" id="destinationDetailModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalDestName">Destination Details</h3>
+        <button class="btn-close" id="closeDetailModalBtn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="position: relative; height: 260px; border-radius: var(--radius-sm); overflow: hidden; margin-bottom: 1.25rem;">
+          <img id="modalDestImg" src="" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+          <span class="dest-badge-category" id="modalDestCategory">Category</span>
+          <span class="dest-badge-price" id="modalDestCost">$0</span>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+          <div style="font-weight: 600; color: var(--color-text-muted); font-size: 0.95rem;" id="modalDestCountry">Country</div>
+          <div style="font-weight: 700; color: #E67E22;" id="modalDestRating">★ 4.8</div>
+        </div>
+        <p style="font-size: 0.95rem; color: var(--color-text-main); line-height: 1.6; margin-bottom: 1.25rem;" id="modalDestDesc">
+          Overview...
+        </p>
+        <div style="background: var(--bg-aqua-tint); padding: 0.85rem 1.15rem; border-radius: var(--radius-sm); display: flex; justify-content: space-between; font-size: 0.9rem; margin-bottom: 0.5rem;">
+          <span>Recommended Duration: <strong id="modalDestDuration">3 days</strong></span>
+          <span>Destination Code: <code id="modalDestCode">DEST-01</code></span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancelDetailModalBtn">Close</button>
+        <a href="itinerary-builder.html" class="btn btn-primary" id="modalAddTripBtn">Add to My Trip</a>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer"></footer>
+
+  <script src="js/wayfarer-api.js"></script>
+  <script src="js/wayfarer-ui.js"></script>
+  <script>
+    let allDestinations = [];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await WayfarerUI.initNavbar('home');
+      WayfarerUI.initFooter();
+
+      initSearchTabs();
+      initDetailModal();
+      loadHomepageDestinations();
+      initCarouselControls();
+    });
+
+    // Tab Switching in Hero
+    function initSearchTabs() {
+      const tabs = [
+        { btn: 'tabBtnPlan', form: 'heroPlanForm' },
+        { btn: 'tabBtnRoute', form: 'heroRouteForm' },
+        { btn: 'tabBtnExplore', form: 'heroExploreForm' }
+      ];
+
+      tabs.forEach(t => {
+        document.getElementById(t.btn).addEventListener('click', (e) => {
+          e.preventDefault();
+          tabs.forEach(other => {
+            const ob = document.getElementById(other.btn);
+            const of = document.getElementById(other.form);
+            if (other.btn === t.btn) {
+              ob.classList.add('active');
+              of.style.display = 'block';
+            } else {
+              ob.classList.remove('active');
+              of.style.display = 'none';
+            }
+          });
+        });
+      });
+
+      // Tab 1 Submit: Plan Trip
+      document.getElementById('heroPlanForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const start = document.getElementById('heroStartSelect').value;
+        const category = document.getElementById('heroCategorySelect').value;
+        const budget = document.getElementById('heroBudgetInput').value;
+        window.location.href = `recommendations.html?start=${encodeURIComponent(start)}&category=${encodeURIComponent(category)}&budget=${encodeURIComponent(budget)}`;
+      });
+
+      // Tab 2 Submit: Route Finder
+      document.getElementById('heroRouteForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const origin = document.getElementById('heroRouteOrigin').value;
+        const target = document.getElementById('heroRouteTarget').value;
+        window.location.href = `route-planner.html?origin=${encodeURIComponent(origin)}&target=${encodeURIComponent(target)}`;
+      });
+
+      // Tab 3 Submit: Explore
+      document.getElementById('heroExploreForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const cat = document.getElementById('heroExploreCategory').value;
+        const q = document.getElementById('heroExploreSearch').value.trim();
+        window.location.href = `explore.html?category=${encodeURIComponent(cat)}&q=${encodeURIComponent(q)}`;
+      });
+    }
+
+    async function loadHomepageDestinations() {
+      try {
+        const dests = await WayfarerAPI.getDestinations();
+        allDestinations = Array.isArray(dests) ? dests : [];
+
+        // Populate search dropdowns
+        populateDropdowns();
+
+        // Render Carousel
+        renderCarousel();
+
+        // Render Featured Grid
+        renderFeaturedGrid();
+      } catch (err) {
+        console.error('Error loading destinations:', err);
+      }
+    }
+
+    function populateDropdowns() {
+      const startSel = document.getElementById('heroStartSelect');
+      const originSel = document.getElementById('heroRouteOrigin');
+      const targetSel = document.getElementById('heroRouteTarget');
+
+      const options = allDestinations.map(d => 
+        `<option value="${d.destinationCode}">${d.destinationCode} &bull; ${WayfarerUI.escape(d.name)}</option>`
+      ).join('');
+
+      if (startSel) startSel.innerHTML = '<option value="">Select origin hub...</option>' + options;
+      if (originSel) originSel.innerHTML = options;
+      if (targetSel) {
+        targetSel.innerHTML = options;
+        if (allDestinations.length > 1) targetSel.selectedIndex = 1;
+      }
+    }
+
+    function renderCarousel() {
+      const track = document.getElementById('popularCarouselTrack');
+      if (allDestinations.length === 0) {
+        track.innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--color-text-muted);">No destinations available.</div>';
+        return;
+      }
+
+      track.innerHTML = allDestinations.map(d => {
+        const img = WayfarerUI.getDestinationImage(d);
+        return `
+          <div class="carousel-item">
+            <div class="destination-card">
+              <div class="dest-img-wrap">
+                <img src="${WayfarerUI.escape(img)}" alt="${WayfarerUI.escape(d.name)}" class="dest-img" loading="lazy">
+                <span class="dest-badge-category">${WayfarerUI.escape(d.category || 'General')}</span>
+                <span class="dest-badge-price">${WayfarerUI.formatMoney(d.estimatedCost)}</span>
+              </div>
+              <div class="dest-card-body">
+                <div class="dest-location">
+                  <span>📍</span>
+                  <span>${WayfarerUI.escape(d.city ? `${d.city}, ${d.country}` : d.country)}</span>
+                </div>
+                <h3 class="dest-title">${WayfarerUI.escape(d.name)}</h3>
+                <p class="dest-desc">${WayfarerUI.escape(d.description || 'Experience stunning sights, authentic culture, and picturesque landscapes.')}</p>
+                <div class="dest-meta-row">
+                  <div class="dest-rating">★ ${d.rating || '4.8'}</div>
+                  <div style="display: flex; gap: 0.4rem;">
+                    <button class="btn btn-secondary btn-sm" onclick="openDetailModal(${d.id})">Explore</button>
+                    <a href="itinerary-builder.html?addDestId=${d.id}" class="btn btn-primary btn-sm">+ Plan</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderFeaturedGrid() {
+      const grid = document.getElementById('featuredGrid');
+      const featured = allDestinations.slice(0, 3);
+      if (featured.length === 0) {
+        grid.innerHTML = '<div style="grid-column: 1 / -1;" class="text-center text-muted">No destinations available.</div>';
+        return;
+      }
+
+      grid.innerHTML = featured.map(d => {
+        const img = WayfarerUI.getDestinationImage(d);
+        return `
+          <div class="destination-card">
+            <div class="dest-img-wrap">
+              <img src="${WayfarerUI.escape(img)}" alt="${WayfarerUI.escape(d.name)}" class="dest-img" loading="lazy">
+              <span class="dest-badge-category">${WayfarerUI.escape(d.category || 'General')}</span>
+              <span class="dest-badge-price">${WayfarerUI.formatMoney(d.estimatedCost)}</span>
+            </div>
+            <div class="dest-card-body">
+              <div class="dest-location">
+                <span>📍</span>
+                <span>${WayfarerUI.escape(d.country)}</span>
+              </div>
+              <h3 class="dest-title">${WayfarerUI.escape(d.name)}</h3>
+              <p class="dest-desc">${WayfarerUI.escape(d.description || 'Unforgettable international voyages and cultural immersion.')}</p>
+              <div class="dest-meta-row">
+                <div class="dest-rating">★ ${d.rating || '4.9'}</div>
+                <button class="btn btn-secondary btn-sm" onclick="openDetailModal(${d.id})">View Details</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function initCarouselControls() {
+      const track = document.getElementById('popularCarouselTrack');
+      const prevBtn = document.getElementById('carouselPrevBtn');
+      const nextBtn = document.getElementById('carouselNextBtn');
+
+      if (prevBtn && track) {
+        prevBtn.addEventListener('click', () => {
+          track.scrollBy({ left: -340, behavior: 'smooth' });
+        });
+      }
+      if (nextBtn && track) {
+        nextBtn.addEventListener('click', () => {
+          track.scrollBy({ left: 340, behavior: 'smooth' });
+        });
+      }
+    }
+
+    function initDetailModal() {
+      const modal = document.getElementById('destinationDetailModal');
+      const closeBtn = document.getElementById('closeDetailModalBtn');
+      const cancelBtn = document.getElementById('cancelDetailModalBtn');
+
+      const closeModal = () => modal.classList.remove('active');
+      closeBtn.addEventListener('click', closeModal);
+      cancelBtn.addEventListener('click', closeModal);
+    }
+
+    window.openDetailModal = function(id) {
+      const d = allDestinations.find(x => x.id === id);
+      if (!d) return;
+
+      document.getElementById('modalDestName').textContent = d.name;
+      document.getElementById('modalDestImg').src = WayfarerUI.getDestinationImage(d);
+      document.getElementById('modalDestCategory').textContent = d.category || 'General';
+      document.getElementById('modalDestCost').textContent = WayfarerUI.formatMoney(d.estimatedCost);
+      document.getElementById('modalDestCountry').textContent = `📍 ${d.city ? `${d.city}, ` : ''}${d.country}`;
+      document.getElementById('modalDestRating').textContent = `★ ${d.rating || '4.8'}`;
+      document.getElementById('modalDestDesc').textContent = d.description || 'Breathtaking sights and memorable moments await at this destination.';
+      document.getElementById('modalDestDuration').textContent = `${d.durationDays || 3} days`;
+      document.getElementById('modalDestCode').textContent = d.destinationCode || 'DEST';
+      document.getElementById('modalAddTripBtn').href = `itinerary-builder.html?addDestId=${d.id}`;
+
+      document.getElementById('destinationDetailModal').classList.add('active');
+    };
+  </script>
+</body>
+</html>

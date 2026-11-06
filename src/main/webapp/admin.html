@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Console — Wayfarer</title>
+  <link rel="stylesheet" href="css/wayfarer-clean.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300A6B2'><path d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z'/></svg>">
+</head>
+<body>
+  <header class="navbar" id="mainNav"></header>
+
+  <main class="main-wrapper">
+    <div class="page-header-row">
+      <div>
+        <span class="badge badge-accent" style="margin-bottom: 0.5rem;">Administrator Console</span>
+        <h1 class="page-title title-serif">System Management</h1>
+        <p class="page-subtitle" style="margin-bottom: 0;">Manage destinations catalogue and graph transit connections in MySQL</p>
+      </div>
+      <div class="btn-group">
+        <button id="openNewDestBtn" class="btn btn-primary">+ Add Destination</button>
+        <button id="openNewConnBtn" class="btn btn-secondary">+ Add Connection Edge</button>
+      </div>
+    </div>
+
+    <!-- Quick Stats Cards -->
+    <div class="grid-3" style="margin-bottom: 2rem;">
+      <div class="card">
+        <div style="font-size: 0.82rem; font-weight: 600; text-transform: uppercase; color: var(--color-text-muted);">Catalog Destinations</div>
+        <div id="statTotalDest" style="font-size: 2rem; font-weight: 700; color: var(--color-primary); margin: 0.25rem 0;">0</div>
+        <div style="font-size: 0.8rem; color: var(--color-text-muted);">Active in MySQL database</div>
+      </div>
+      <div class="card">
+        <div style="font-size: 0.82rem; font-weight: 600; text-transform: uppercase; color: var(--color-text-muted);">Transit Graph Edges</div>
+        <div id="statTotalConn" style="font-size: 2rem; font-weight: 700; color: var(--color-accent); margin: 0.25rem 0;">0</div>
+        <div style="font-size: 0.8rem; color: var(--color-text-muted);">Directed connections in TravelGraph</div>
+      </div>
+      <div class="card">
+        <div style="font-size: 0.82rem; font-weight: 600; text-transform: uppercase; color: var(--color-text-muted);">Avg. Transit Cost</div>
+        <div id="statAvgCost" style="font-size: 2rem; font-weight: 700; color: var(--color-primary); margin: 0.25rem 0;">$0</div>
+        <div style="font-size: 0.8rem; color: var(--color-text-muted);">Across all graph edges</div>
+      </div>
+    </div>
+
+    <!-- Tab Selector -->
+    <div style="display: flex; border-bottom: 1px solid var(--color-border); margin-bottom: 1.5rem; gap: 1rem;">
+      <button id="tabDestinations" class="btn" style="border-radius: 0; border: none; border-bottom: 2px solid var(--color-primary); color: var(--color-primary); background: none; font-weight: 700; padding: 0.6rem 1rem;">
+        Destinations Catalog (<span id="countDest">0</span>)
+      </button>
+      <button id="tabConnections" class="btn" style="border-radius: 0; border: none; border-bottom: 2px solid transparent; color: var(--color-text-muted); background: none; font-weight: 600; padding: 0.6rem 1rem;">
+        Graph Transit Connections (<span id="countConn">0</span>)
+      </button>
+    </div>
+
+    <!-- Section: Destinations -->
+    <div id="sectionDestinations">
+      <div class="card" style="padding: 0; overflow: hidden;">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th style="width: 60px;">Photo</th>
+                <th>Code</th>
+                <th>Destination Name</th>
+                <th>Country</th>
+                <th>Category</th>
+                <th>Est. Cost</th>
+                <th>Duration</th>
+                <th>Rating</th>
+                <th style="text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="destinationsTableBody">
+              <tr><td colspan="9" style="text-align: center; padding: 2rem;">Loading destinations...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section: Connections -->
+    <div id="sectionConnections" style="display: none;">
+      <div class="card" style="padding: 0; overflow: hidden;">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Origin Destination</th>
+                <th>Target Destination</th>
+                <th>Distance (km)</th>
+                <th>Travel Cost</th>
+                <th>Travel Time</th>
+                <th style="text-align: right;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="connectionsTableBody">
+              <tr><td colspan="6" style="text-align: center; padding: 2rem;">Loading travel connections...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Add/Edit Destination Modal -->
+  <div class="modal-backdrop" id="destinationModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" id="destModalTitle">Add Destination</h3>
+        <button class="btn-close" id="closeDestModalBtn">&times;</button>
+      </div>
+      <form id="destForm">
+        <div class="modal-body">
+          <input type="hidden" id="destId">
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label" for="destCode">Code (e.g. DEST-09)</label>
+              <input type="text" id="destCode" class="form-control" placeholder="DEST-09" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="destCategory">Category</label>
+              <select id="destCategory" class="form-select" required>
+                <option value="Cultural">Cultural</option>
+                <option value="Historical">Historical</option>
+                <option value="Adventure">Adventure</option>
+                <option value="Relaxation">Relaxation</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="destName">Destination Name</label>
+            <input type="text" id="destName" class="form-control" placeholder="Kyoto Historic Temples" required>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label" for="destCountry">Country</label>
+              <input type="text" id="destCountry" class="form-control" placeholder="Japan" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="destCity">City</label>
+              <input type="text" id="destCity" class="form-control" placeholder="Kyoto">
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label" for="destCost">Estimated Cost ($)</label>
+              <input type="number" id="destCost" class="form-control" placeholder="1200" min="0" step="10" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="destDuration">Duration (Days)</label>
+              <input type="number" id="destDuration" class="form-control" placeholder="4" min="1" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="destImage">Image URL</label>
+            <div style="display: flex; gap: 0.75rem; align-items: center;">
+              <input type="url" id="destImage" class="form-control" placeholder="https://images.unsplash.com/..." style="flex: 1;">
+              <img id="destImagePreview" src="" alt="Preview" style="display: none; width: 60px; height: 42px; object-fit: cover; border-radius: var(--radius-xs); border: 1px solid var(--color-border);">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="destDesc">Description</label>
+            <textarea id="destDesc" class="form-control" rows="3" placeholder="Brief overview of sights and attractions..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelDestBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveDestBtn">Save Destination</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add Connection Modal -->
+  <div class="modal-backdrop" id="connectionModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">Add Graph Transit Edge</h3>
+        <button class="btn-close" id="closeConnModalBtn">&times;</button>
+      </div>
+      <form id="connForm">
+        <div class="modal-body">
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label" for="connSourceSelect">Origin Destination</label>
+              <select id="connSourceSelect" class="form-select" required></select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="connTargetSelect">Target Destination</label>
+              <select id="connTargetSelect" class="form-select" required></select>
+            </div>
+          </div>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label" for="connDistance">Distance (km)</label>
+              <input type="number" id="connDistance" class="form-control" placeholder="1500" min="1" step="10" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="connCost">Estimated Travel Cost ($)</label>
+              <input type="number" id="connCost" class="form-control" placeholder="250" min="0" step="5" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="connMinutes">Travel Time (Minutes)</label>
+            <input type="number" id="connMinutes" class="form-control" placeholder="180" min="10">
+          </div>
+          <div class="form-group">
+            <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.95rem; cursor: pointer;">
+              <input type="checkbox" id="connBidirectional" checked>
+              <span>Add bidirectional route (Origin ⇄ Target)</span>
+            </label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelConnBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveConnBtn">Add Edge to Graph</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="footer"></footer>
+
+  <script src="js/wayfarer-api.js"></script>
+  <script src="js/wayfarer-ui.js"></script>
+  <script>
+    let destinations = [];
+    let connections = [];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const user = await WayfarerUI.requireAdmin();
+      if (!user) return;
+
+      await WayfarerUI.initNavbar('admin');
+      WayfarerUI.initFooter();
+
+      loadAdminData();
+      initTabs();
+      initModals();
+    });
+
+    async function loadAdminData() {
+      try {
+        const [dests, conns] = await Promise.all([
+          WayfarerAPI.getDestinations(),
+          WayfarerAPI.getConnections()
+        ]);
+
+        destinations = Array.isArray(dests) ? dests : [];
+        connections = Array.isArray(conns) ? conns : [];
+
+        document.getElementById('countDest').textContent = destinations.length;
+        document.getElementById('countConn').textContent = connections.length;
+
+        // Stats cards
+        document.getElementById('statTotalDest').textContent = destinations.length;
+        document.getElementById('statTotalConn').textContent = connections.length;
+        if (connections.length > 0) {
+          const totalCost = connections.reduce((sum, c) => sum + (c.estimatedTravelCost || 0), 0);
+          document.getElementById('statAvgCost').textContent = WayfarerUI.formatMoney(Math.round(totalCost / connections.length));
+        } else {
+          document.getElementById('statAvgCost').textContent = '$0';
+        }
+
+        renderDestinationsTable();
+        renderConnectionsTable();
+        populateConnectionDropdowns();
+      } catch (err) {
+        console.error('Failed to load admin data:', err);
+      }
+    }
+
+    function renderDestinationsTable() {
+      const tbody = document.getElementById('destinationsTableBody');
+      if (destinations.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4">No destinations found in database.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = destinations.map(d => {
+        const img = WayfarerUI.getDestinationImage(d);
+        return `
+          <tr>
+            <td>
+              <img src="${WayfarerUI.escape(img)}" alt="${WayfarerUI.escape(d.name)}" style="width: 44px; height: 34px; object-fit: cover; border-radius: var(--radius-xs); border: 1px solid var(--color-border);">
+            </td>
+            <td><code>${WayfarerUI.escape(d.destinationCode)}</code></td>
+            <td style="font-weight: 600; color: var(--color-primary);">${WayfarerUI.escape(d.name)}</td>
+            <td>${WayfarerUI.escape(d.country)}</td>
+            <td><span class="badge badge-primary">${WayfarerUI.escape(d.category || 'General')}</span></td>
+            <td>${WayfarerUI.formatMoney(d.estimatedCost)}</td>
+            <td>${d.durationDays || 1}d</td>
+            <td>★ ${d.rating || '4.8'}</td>
+            <td style="text-align: right;">
+              <div style="display: flex; gap: 0.35rem; justify-content: flex-end;">
+                <button class="btn btn-secondary btn-sm" onclick="editDestination(${d.id})">Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteDestination(${d.id})">Delete</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function renderConnectionsTable() {
+      const tbody = document.getElementById('connectionsTableBody');
+      if (connections.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4">No transit connections defined.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = connections.map(c => {
+        const src = destinations.find(x => x.destinationCode === c.sourceCode);
+        const tgt = destinations.find(x => x.destinationCode === c.targetCode);
+        const srcName = src ? src.name : c.sourceCode;
+        const tgtName = tgt ? tgt.name : c.targetCode;
+
+        return `
+          <tr>
+            <td>
+              <code>${WayfarerUI.escape(c.sourceCode)}</code>
+              <span style="font-size: 0.85rem; color: var(--color-text-muted); margin-left: 0.35rem;">(${WayfarerUI.escape(srcName)})</span>
+            </td>
+            <td>
+              <code>${WayfarerUI.escape(c.targetCode)}</code>
+              <span style="font-size: 0.85rem; color: var(--color-text-muted); margin-left: 0.35rem;">(${WayfarerUI.escape(tgtName)})</span>
+            </td>
+            <td>${c.distanceKm} km</td>
+            <td style="font-weight: 600;">${WayfarerUI.formatMoney(c.estimatedTravelCost)}</td>
+            <td>${c.estimatedTravelMinutes ? `${Math.round(c.estimatedTravelMinutes / 60)} hrs` : '—'}</td>
+            <td style="text-align: right;">
+              <button class="btn btn-danger btn-sm" onclick="deleteConnection(${c.id})">Delete Edge</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function populateConnectionDropdowns() {
+      const src = document.getElementById('connSourceSelect');
+      const tgt = document.getElementById('connTargetSelect');
+
+      const opts = '<option value="">Select destination...</option>' + 
+        destinations.map(d => `<option value="${d.id}">${d.destinationCode} - ${WayfarerUI.escape(d.name)}</option>`).join('');
+
+      src.innerHTML = opts;
+      tgt.innerHTML = opts;
+    }
+
+    function initTabs() {
+      const tabDest = document.getElementById('tabDestinations');
+      const tabConn = document.getElementById('tabConnections');
+      const secDest = document.getElementById('sectionDestinations');
+      const secConn = document.getElementById('sectionConnections');
+
+      tabDest.addEventListener('click', () => {
+        tabDest.style.borderBottomColor = 'var(--color-primary)';
+        tabDest.style.color = 'var(--color-primary)';
+        tabDest.style.fontWeight = '700';
+
+        tabConn.style.borderBottomColor = 'transparent';
+        tabConn.style.color = 'var(--color-text-muted)';
+        tabConn.style.fontWeight = '600';
+
+        secDest.style.display = 'block';
+        secConn.style.display = 'none';
+      });
+
+      tabConn.addEventListener('click', () => {
+        tabConn.style.borderBottomColor = 'var(--color-primary)';
+        tabConn.style.color = 'var(--color-primary)';
+        tabConn.style.fontWeight = '700';
+
+        tabDest.style.borderBottomColor = 'transparent';
+        tabDest.style.color = 'var(--color-text-muted)';
+        tabDest.style.fontWeight = '600';
+
+        secConn.style.display = 'block';
+        secDest.style.display = 'none';
+      });
+    }
+
+    function initModals() {
+      // Destination Modal
+      const destModal = document.getElementById('destinationModal');
+      const openDestBtn = document.getElementById('openNewDestBtn');
+      const closeDestBtn = document.getElementById('closeDestModalBtn');
+      const cancelDestBtn = document.getElementById('cancelDestBtn');
+      const destForm = document.getElementById('destForm');
+
+      const closeDest = () => destModal.classList.remove('active');
+      openDestBtn.addEventListener('click', () => {
+        document.getElementById('destId').value = '';
+        document.getElementById('destModalTitle').textContent = 'Add Destination';
+        destForm.reset();
+        document.getElementById('destImagePreview').style.display = 'none';
+        destModal.classList.add('active');
+      });
+      closeDestBtn.addEventListener('click', closeDest);
+      cancelDestBtn.addEventListener('click', closeDest);
+
+      document.getElementById('destImage').addEventListener('input', (e) => {
+        const val = e.target.value.trim();
+        const prev = document.getElementById('destImagePreview');
+        if (val && val.startsWith('http')) {
+          prev.src = val;
+          prev.style.display = 'block';
+        } else {
+          prev.style.display = 'none';
+        }
+      });
+
+      destForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('destId').value;
+        const data = {
+          id: id ? parseInt(id) : undefined,
+          destinationCode: document.getElementById('destCode').value.trim(),
+          name: document.getElementById('destName').value.trim(),
+          country: document.getElementById('destCountry').value.trim(),
+          city: document.getElementById('destCity').value.trim(),
+          category: document.getElementById('destCategory').value,
+          estimatedCost: parseFloat(document.getElementById('destCost').value) || 0,
+          durationDays: parseInt(document.getElementById('destDuration').value) || 1,
+          imageUrl: document.getElementById('destImage').value.trim(),
+          description: document.getElementById('destDesc').value.trim()
+        };
+
+        try {
+          const res = id ? await WayfarerAPI.updateDestination(data) : await WayfarerAPI.createDestination(data);
+          if (res && res.success) {
+            closeDest();
+            loadAdminData();
+          } else {
+            alert(res.message || 'Operation failed.');
+          }
+        } catch (err) {
+          alert('Error: ' + err.message);
+        }
+      });
+
+      // Connection Modal
+      const connModal = document.getElementById('connectionModal');
+      const openConnBtn = document.getElementById('openNewConnBtn');
+      const closeConnBtn = document.getElementById('closeConnModalBtn');
+      const cancelConnBtn = document.getElementById('cancelConnBtn');
+      const connForm = document.getElementById('connForm');
+
+      const closeConn = () => connModal.classList.remove('active');
+      openConnBtn.addEventListener('click', () => {
+        connForm.reset();
+        connModal.classList.add('active');
+      });
+      closeConnBtn.addEventListener('click', closeConn);
+      cancelConnBtn.addEventListener('click', closeConn);
+
+      connForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = {
+          sourceDestinationId: parseInt(document.getElementById('connSourceSelect').value),
+          targetDestinationId: parseInt(document.getElementById('connTargetSelect').value),
+          distanceKm: parseFloat(document.getElementById('connDistance').value) || 0,
+          estimatedTravelCost: parseFloat(document.getElementById('connCost').value) || 0,
+          estimatedTravelMinutes: parseInt(document.getElementById('connMinutes').value) || 120,
+          bidirectional: document.getElementById('connBidirectional').checked
+        };
+
+        if (data.sourceDestinationId === data.targetDestinationId) {
+          alert('Origin and target destination cannot be identical.');
+          return;
+        }
+
+        try {
+          const res = await WayfarerAPI.createConnection(data);
+          if (res && res.success) {
+            closeConn();
+            loadAdminData();
+          } else {
+            alert(res.message || 'Could not create connection edge.');
+          }
+        } catch (err) {
+          alert('Error: ' + err.message);
+        }
+      });
+    }
+
+    window.editDestination = function(id) {
+      const d = destinations.find(x => x.id === id);
+      if (!d) return;
+
+      document.getElementById('destId').value = d.id;
+      document.getElementById('destModalTitle').textContent = 'Edit Destination';
+      document.getElementById('destCode').value = d.destinationCode || '';
+      document.getElementById('destName').value = d.name || '';
+      document.getElementById('destCountry').value = d.country || '';
+      document.getElementById('destCity').value = d.city || '';
+      document.getElementById('destCategory').value = d.category || 'Cultural';
+      document.getElementById('destCost').value = d.estimatedCost || 0;
+      document.getElementById('destDuration').value = d.durationDays || 1;
+      document.getElementById('destImage').value = d.imageUrl || '';
+      const prev = document.getElementById('destImagePreview');
+      if (d.imageUrl && d.imageUrl.startsWith('http')) {
+        prev.src = d.imageUrl;
+        prev.style.display = 'block';
+      } else {
+        prev.style.display = 'none';
+      }
+      document.getElementById('destDesc').value = d.description || '';
+
+      document.getElementById('destinationModal').classList.add('active');
+    };
+
+    window.deleteDestination = async function(id) {
+      const d = destinations.find(x => x.id === id);
+      const name = d ? (d.name || 'this destination') : 'this destination';
+      if (!confirm(`Are you sure you want to delete "${name}"? This will also remove any associated travel connections.`)) return;
+
+      try {
+        const res = await WayfarerAPI.deleteDestination(id);
+        if (res && res.success) {
+          loadAdminData();
+        } else {
+          alert(res.message || 'Could not delete destination.');
+        }
+      } catch (err) {
+        alert('Delete error: ' + err.message);
+      }
+    };
+
+    window.deleteConnection = async function(id) {
+      if (!confirm('Are you sure you want to delete this transit connection edge?')) return;
+
+      try {
+        const res = await WayfarerAPI.deleteConnection(id);
+        if (res && res.success) {
+          loadAdminData();
+        } else {
+          alert(res.message || 'Could not delete connection edge.');
+        }
+      } catch (err) {
+        alert('Delete error: ' + err.message);
+      }
+    };
+  </script>
+</body>
+</html>

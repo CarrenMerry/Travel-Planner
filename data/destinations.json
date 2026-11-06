@@ -1,0 +1,558 @@
+[
+  {
+    "id": "DEST-01",
+    "name": "Tokyo Imperial Trails",
+    "location": "Tokyo, Japan",
+    "description": "Ultra-modern skyscrapers blend with historic shrines, neon-lit alleys, and world-class ramen.",
+    "estimatedCost": 1450.0,
+    "visitDuration": 5.0,
+    "rating": 4.9,
+    "imageUrl": "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?auto\u003dformat\u0026fit\u003dcrop\u0026w\u003d800\u0026q\u003d80",
+    "activities": [
+      {
+        "id": "ACT-01",
+        "name": "Shibuya Crossing \u0026 Sky Tour",
+        "cost": 80.0,
+        "travelValue": 92
+      },
+      {
+        "id": "ACT-02",
+        "name": "Tsukiji Outer Market Food Crawl",
+        "cost": 65.0,
+        "travelValue": 88
+      },
+      {
+        "id": "ACT-03",
+        "name": "Senso-ji Temple \u0026 Asakusa Walking",
+        "cost": 30.0,
+        "travelValue": 75
+      },
+      {
+        "id": "ACT-04",
+        "name": "Mount Fuji Day Trip \u0026 Onsen",
+        "cost": 220.0,
+        "travelValue": 96
+      }
+    ],
+    "connections": [
+      {
+        "targetId": "DEST-08",
+        "distanceKm": 7800.0,
+        "travelCost": 680.0
+      },
+      {
+        "targetId": "DEST-11",
+        "distanceKm": 4600.0,
+        "travelCost": 320.0
+      },
+      {
+        "targetId": "DEST-04",
+        "distanceKm": 5500.0,
+        "travelCost": 410.0
+      }
+    ]
+  },
+  {
+    "id": "DEST-02",
+    "name": "Parisian Art \u0026 Culture",
+    "location": "Paris, France",
+    "description": "The City of Light boasts timeless architecture, Louvre masterpieces, romantic bistros, and Seine strolls.",
+    "estimatedCost": 1600.0,
+    "visitDuration": 4.0,
+    "rating": 4.8,
+    "imageUrl": "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto\u003dformat\u0026fit\u003dcrop\u0026w\u003d800\u0026q\u003d80",
+    "activities": [
+      {
+        "id": "ACT-05",
+        "name": "Louvre Museum VIP Access",
+        "cost": 95.0,
+        "travelValue": 95
+      },
+      {
+        "id": "ACT-06",
+        "name": "Eiffel Tower Summit \u0026 Champagne",
+        "cost": 110.0,
+        "travelValue": 90
+      },
+      {
+        "id": "ACT-07",
+        "name": "Seine River Sunset Cruise",
+        "cost": 50.0,
+        "travelValue": 82
+      },
+      {
+        "id": "ACT-08",
+        "name": "Versailles Palace Royal Guided Tour",
+        "cost": 140.0,
+        "travelValue": 94
+      }
+    ],
+    "connections": [
+      {
+        "targetId": "DEST-03",
+        "distanceKm": 1100.0,
+        "travelCost": 120.0
+      },
+      {
+        "targetId": "DEST-09",
+        "distanceKm": 830.0,
+        "travelCost": 95.0
+      },
+      {
+        "targetId": "DEST-10",
+        "distanceKm": 2200.0,
+        "travelCost": 260.0
+      },
+      {
+        "targetId": "DEST-05",
+        "distanceKm": 5800.0,
+        "travelCost": 520.0
+      }
+    ]
+  },
+  {
+    "id": "DEST-03",
+    "name": "Ancient Rome Odyssey",
+    "location": "Rome, Italy",
+    "description": "Walk among millennia of Roman history at the Colosseum, Vatican museums, and lively piazzas.",
+    "estimatedCost": 1350.0,
+    "visitDuration": 4.0,
+    "rating": 4.7,
+    "imageUrl": "https://images.unsplash.com/photo-1552832230-c0197dd311b5?auto\u003dformat\u0026fit\u003dcrop\u0026w\u003d800\u0026q\u003d80",
+    "activities": [
+      {
+        "id": "ACT-09",
+        "name": "Colosseum \u0026 Roman Forum Underpass",
+        "cost": 75.0,
+        "travelValue": 93
+      },
+      {
+        "id": "ACT-10",
+        "name": "Vatican City \u0026 Sistine Chapel Tour",
+        "cost": 85.0,
+        "travelValue": 94
+      },
+      {
+        "id": "ACT-11",
+        "name": "Trastevere Authentic Pasta Masterclass",
+        "cost": 90.0,
+        "travelValue": 89
+      }
+    ],
+    "connections": [
+      {
+        "targetId": "DEST-02",
+        "distanceKm": 1100.0,
+        "travelCost": 120.0
+      },
+      {
+        "targetId": "DEST-09",
+        "distanceKm": 860.0,
+        "travelCost": 110.0
+      },
+      {
+        "targetId": "DEST-07",
+        "distanceKm": 2100.0,
+        "travelCost": 240.0
+      }
+    ]
+  },
+  {
+    "id": "DEST-04",
+    "name": "Bali Tropical Escape",
+    "location": "Ubud, Indonesia",
+    "description": "Lush emerald rice terraces, serene Hindu temples, volcanic sunrises, and tranquil coastal surf.",
+    "estimatedCost": 850.0,
+    "visitDuration": 6.0,
+    "rating": 4.8,
+    "imageUrl": "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto\u003dformat\u0026fit\u003dcrop\u0026w\u003d800\u0026q\u003d80",
+    "activities": [
+      {
+        "id": "ACT-12",
+        "name": "Mount Batur Sunrise Trek",
+        "cost": 60.0,
+        "travelValue": 91
+      },
+      {
+        "id": "ACT-13",
+        "name": "Ubud Monkey Forest \u0026 Sacred Springs",
+        "cost": 35.0,
+        "travelValue": 80
+      },
+      {
+        "id": "ACT-14",
+        "name": "Balinese Traditional Cooking \u0026 Market Tour",
+        "cost": 45.0,
+        "travelValue": 86
+      }
+    ],
+    "connections": [
+      {
+        "targetId": "DEST-01",
+        "distanceKm": 5500.0,
+        "travelCost": 410.0
+      },
+      {
+        "targetId": "DEST-11",
+        "distanceKm": 2900.0,
+        "travelCost": 190.0
+      },
+      {
+        "targetId": "DEST-08",
+        "distanceKm": 4600.0,
+        "travelCost": 340.0
+      }
+    ]
+  },
+  {
+    "id": "DEST-05",
+    "name": "New York Skyline Discovery",
+    "location": "New York, USA",
+    "description": "The pulsating metropolis of Broadway shows, iconic Central Park, museums, and historic neighborhoods.",
+    "estimatedCost": 1950.0,
+    "visitDuration": 5.0,
+    "rating": 4.6,
+    "imageUrl": "https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto\u003dformat\u0026fit\u003dcrop\u0026w\u003d800\u0026q\u003d80",
+    "activities": [
+      {
+        "id": "ACT-15",
+        "name": "Broadway Hit Musical Orchestra Seat",
+        "cost": 180.0,
+        "travelValue": 95
+      },
+      {
+        "id": "ACT-16",
+        "name": "Statue of Liberty \u0026 Ellis Island Ferry",
+        "cost": 40.0,
+        "travelValue": 84
+      },
+      {
+        "id": "ACT-17",
+        "name": "Summit One Vanderbilt Observation Deck",
+        "cost": 65.0,
+        "travelValue": 90
+      }
+    ],
+    "connections": [
+      {
+        "targetId": "DEST-02",
+        "distanceKm": 5800.0,
+        "travelCost": 520.0
+      },
+      {
+        "targetId": "DEST-10",
+        "distanceKm": 4200.0,
+        "travelCost": 410.0
+      },
+      {
+        "targetId": "DEST-12",
+        "distanceKm": 7700.0,
+        "travelCost": 710.0
+      }
+    ]
+  },
+  {
+    "id": "DEST-06",
+    "name": "Cape Town Coastal Wonder",
+    "location": "Cape Town, South Africa",
+    "description": "Spectacular Table Mountain views, penguin beaches, Atlantic panoramas, and scenic Winelands.",
+    "estimatedCost": 1100.0,
+    "visitDuration": 5.0,
+    "rating": 4.9,
+    "imageUrl": "https://images.unsplash.com/photo-1580618672591-eb180b1a973f?auto\u003dformat\u0026fit\u003dcrop\u0026w\u003d800\u0026q\u003d80",
+    "activities": [
+      {
+        "id": "ACT-18",
+        "name": "Table Mountain Cableway \u0026 Hike",
+        "cost": 50.0,
+        "travelValue": 92
+      },
+      {
+        "id": "ACT-19",
+        "name": "Cape Point \u0026 Boulders Beach Penguins",
+        "cost": 75.0,
+        "travelValue": 94
+      },
+      {
+        "id": "ACT-20",
+        "name": "Stellenbosch Vineyard Wine Tasting",
+        "cost": 95.0,
+        "travelValue": 87
+      }
+    ],
+    "connections": [
+      {
+        "targetId": "DEST-07",
+        "distanceKm": 7200.0,
+        "travelCost": 590.0
+      },
+      {
+        "targetId": "DEST-12",
+        "distanceKm": 6000.0,
+        "travelCost": 530.0
+      }
+    ]
+  },
+  {
+    "id": "DEST-07",
+    "name": "Giza Pyramids \u0026 Nile Heritage",
+    "location": "Cairo, Egypt",
+    "description": "Stand in awe before the Great Pyramids, Khan el-Khalili bazaar, and cruise the historic Nile River.",
+    "estimatedCost": 920.0,
+    "visitDuration": 4.0,
+    "rating": 4.5,
+    "imageUrl": "https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?auto\u003dformat\u0026fit\u003dcrop\u0026w\u003d800\u0026q\u003d80",
+    "activities": [
+      {
+        "id": "ACT-21",
+        "name": "Private Giza Pyramids \u0026 Sphinx Camel Tour",
+        "cost": 85.0,
+        "travelValue": 96
+      },
+      {
+        "id": "ACT-22",
+        "name": "Grand Egyptian Museum Discovery",
+        "cost": 50.0,
+        "travelValue": 93
+      },
+      {
+        "id": "ACT-23",
+        "name": "Felucca Sailboat Ride on the Nile",
+        "cost": 40.0,
+        "travelValue": 81
+      }
+    ],
+    "connections": [
+      {
+        "targetId": "DEST-03",
+        "distanceKm": 2100.0,
+        "travelCost": 240.0
+      },
+      {
+        "targetId": "DEST-06",
+        "distanceKm": 7200.0,
+        "travelCost": 590.0
+      },
+      {
+        "targetId": "DEST-11",
+        "distanceKm": 7200.0,
+        "travelCost": 610.0
+      }
+    ]
+  },
+  {
+    "id": "DEST-08",
+    "name": "Sydney Harbour \u0026 Coastal Walks",
+    "location": "Sydney, Australia",
+    "description": "World-renowned Sydney Opera House, golden Bondi Beach sands, ferry rides, and lush Botanic Gardens.",
+    "estimatedCost": 1750.0,
+    "visitDuration": 5.0,
+    "rating": 4.7,
+    "imageUrl": "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto\u003dformat\u0026fit\u003dcrop\u0026w\u003d800\u0026q\u003d80",
+    "activities": [
+      {
+        "id": "ACT-24",
+        "name": "Sydney Harbour Bridge Climb",
+        "cost": 210.0,
+        "travelValue": 97
+      },
+      {
+        "id": "ACT-25",
+        "name": "Opera House Backstage Tour",
+        "cost": 90.0,
+        "travelValue": 89
+      },
+      {
+        "id": "ACT-26",
+        "name": "Bondi to Coogee Coastal Walk",
+        "cost": 25.0,
+        "travelValue": 86
+      }
+    ],
+    "connections": [
+      {
+        "targetId": "DEST-01",
+        "distanceKm": 7800.0,
+        "travelCost": 680.0
+      },
+      {
+        "targetId": "DEST-04",
+        "distanceKm": 4600.0,
+        "travelCost": 340.0
+      }
+    ]
+  },
+  {
+    "id": "DEST-09",
+    "name": "Barcelona Gaudí Highlights",
+    "location": "Barcelona, Spain",
+    "description": "Spectacular Sagrada Família, Park Güell mosaics, Mediterranean beaches, and vibrant tapas quarters.",
+    "estimatedCost": 1250.0,
+    "visitDuration": 4.0,
+    "rating": 4.8,
+    "imageUrl": "https://images.unsplash.com/photo-1583422409516-2895a77efded?auto\u003dformat\u0026fit\u003dcrop\u0026w\u003d800\u0026q\u003d80",
+    "activities": [
+      {
+        "id": "ACT-27",
+        "name": "Sagrada Família Tower Guided Tour",
+        "cost": 70.0,
+        "travelValue": 95
+      },
+      {
+        "id": "ACT-28",
+        "name": "Park Güell Architectural Walk",
+        "cost": 40.0,
+        "travelValue": 89
+      },
+      {
+        "id": "ACT-29",
+        "name": "Gothic Quarter Tapas \u0026 Wine Tour",
+        "cost": 80.0,
+        "travelValue": 91
+      }
+    ],
+    "connections": [
+      {
+        "targetId": "DEST-02",
+        "distanceKm": 830.0,
+        "travelCost": 95.0
+      },
+      {
+        "targetId": "DEST-03",
+        "distanceKm": 860.0,
+        "travelCost": 110.0
+      }
+    ]
+  },
+  {
+    "id": "DEST-10",
+    "name": "Iceland Glaciers \u0026 Northern Lights",
+    "location": "Reykjavik, Iceland",
+    "description": "Dramatic geothermal springs, majestic waterfalls, volcanic landscapes, and surreal aurora borealis.",
+    "estimatedCost": 1850.0,
+    "visitDuration": 4.0,
+    "rating": 4.9,
+    "imageUrl": "https://images.unsplash.com/photo-1529963183134-61a90db47eaf?auto\u003dformat\u0026fit\u003dcrop\u0026w\u003d800\u0026q\u003d80",
+    "activities": [
+      {
+        "id": "ACT-30",
+        "name": "Blue Lagoon Geothermal Spa",
+        "cost": 115.0,
+        "travelValue": 93
+      },
+      {
+        "id": "ACT-31",
+        "name": "Golden Circle \u0026 Gullfoss Waterfall",
+        "cost": 95.0,
+        "travelValue": 92
+      },
+      {
+        "id": "ACT-32",
+        "name": "Glacier Ice Cave \u0026 Aurora Safari",
+        "cost": 170.0,
+        "travelValue": 98
+      }
+    ],
+    "connections": [
+      {
+        "targetId": "DEST-02",
+        "distanceKm": 2200.0,
+        "travelCost": 260.0
+      },
+      {
+        "targetId": "DEST-05",
+        "distanceKm": 4200.0,
+        "travelCost": 410.0
+      }
+    ]
+  },
+  {
+    "id": "DEST-11",
+    "name": "Bangkok Palaces \u0026 Floating Markets",
+    "location": "Bangkok, Thailand",
+    "description": "Grand Palace gold spires, aromatic street food, serene Chao Phraya river ferries, and bustling night markets.",
+    "estimatedCost": 750.0,
+    "visitDuration": 4.0,
+    "rating": 4.6,
+    "imageUrl": "https://images.unsplash.com/photo-1508009603885-50cf7c579365?auto\u003dformat\u0026fit\u003dcrop\u0026w\u003d800\u0026q\u003d80",
+    "activities": [
+      {
+        "id": "ACT-33",
+        "name": "Grand Palace \u0026 Wat Pho Emerald Buddha",
+        "cost": 45.0,
+        "travelValue": 91
+      },
+      {
+        "id": "ACT-34",
+        "name": "Damnoen Saduak Floating Market Tour",
+        "cost": 55.0,
+        "travelValue": 87
+      },
+      {
+        "id": "ACT-35",
+        "name": "Chao Phraya Luxury Dinner Cruise",
+        "cost": 60.0,
+        "travelValue": 89
+      }
+    ],
+    "connections": [
+      {
+        "targetId": "DEST-01",
+        "distanceKm": 4600.0,
+        "travelCost": 320.0
+      },
+      {
+        "targetId": "DEST-04",
+        "distanceKm": 2900.0,
+        "travelCost": 190.0
+      },
+      {
+        "targetId": "DEST-07",
+        "distanceKm": 7200.0,
+        "travelCost": 610.0
+      }
+    ]
+  },
+  {
+    "id": "DEST-12",
+    "name": "Rio Samba \u0026 Sugarloaf Vistas",
+    "location": "Rio de Janeiro, Brazil",
+    "description": "Christ the Redeemer crowning Mount Corcovado, golden Copacabana sands, and vibrant samba rhythms.",
+    "estimatedCost": 1150.0,
+    "visitDuration": 5.0,
+    "rating": 4.7,
+    "imageUrl": "https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto\u003dformat\u0026fit\u003dcrop\u0026w\u003d800\u0026q\u003d80",
+    "activities": [
+      {
+        "id": "ACT-36",
+        "name": "Corcovado \u0026 Christ the Redeemer Train",
+        "cost": 65.0,
+        "travelValue": 94
+      },
+      {
+        "id": "ACT-37",
+        "name": "Sugarloaf Mountain Cable Car Sunset",
+        "cost": 70.0,
+        "travelValue": 93
+      },
+      {
+        "id": "ACT-38",
+        "name": "Samba School Experience \u0026 Caipirinha",
+        "cost": 50.0,
+        "travelValue": 88
+      }
+    ],
+    "connections": [
+      {
+        "targetId": "DEST-05",
+        "distanceKm": 7700.0,
+        "travelCost": 710.0
+      },
+      {
+        "targetId": "DEST-06",
+        "distanceKm": 6000.0,
+        "travelCost": 530.0
+      }
+    ]
+  }
+]

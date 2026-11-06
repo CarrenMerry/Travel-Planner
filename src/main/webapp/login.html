@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In &amp; Register — Wayfarer</title>
+  <link rel="stylesheet" href="css/wayfarer-clean.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300A6B2'><path d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z'/></svg>">
+  <style>
+    .auth-page-container {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--bg-main);
+    }
+    .auth-banner-col {
+      position: relative;
+      background-color: var(--color-deep-teal);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 3.5rem;
+      color: #ffffff;
+    }
+    .auth-banner-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.45;
+    }
+    .auth-banner-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(24, 59, 67, 0.85) 0%, rgba(8, 124, 136, 0.8) 100%);
+    }
+    .auth-banner-content {
+      position: relative;
+      z-index: 2;
+    }
+    .auth-form-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 3rem 2rem;
+      background: #ffffff;
+    }
+    .auth-card-wrap {
+      width: 100%;
+      max-width: 440px;
+    }
+    .input-group {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .input-group .form-control {
+      padding-right: 4rem;
+    }
+    .btn-toggle-pw {
+      position: absolute;
+      right: 0.75rem;
+      background: none;
+      border: none;
+      color: var(--color-text-muted);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0.35rem 0.5rem;
+    }
+    .btn-toggle-pw:hover {
+      color: var(--color-primary);
+    }
+    @media (max-width: 860px) {
+      .auth-page-container {
+        grid-template-columns: 1fr;
+      }
+      .auth-banner-col {
+        display: none;
+      }
+      .auth-form-col {
+        background: var(--bg-main);
+        padding: 3rem 1.25rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-page-container">
+    <!-- Left Hero Banner (Desktop) -->
+    <div class="auth-banner-col">
+      <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1400&q=80" 
+           alt="Serene coastal travel destination" 
+           class="auth-banner-bg">
+      <div class="auth-banner-overlay"></div>
+
+      <div class="auth-banner-content">
+        <a href="index.html" class="brand" style="color: #ffffff; margin-bottom: 2rem; display: inline-flex;">
+          <div class="brand-icon-wrap" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.35);">
+            <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <circle cx="12" cy="12" r="10"/>
+              <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+            </svg>
+          </div>
+          <span>Wayfarer</span>
+        </a>
+      </div>
+
+      <div class="auth-banner-content">
+        <span class="badge" style="background: rgba(255,255,255,0.2); color: #ffffff; margin-bottom: 1rem; border: 1px solid rgba(255,255,255,0.3);">
+          Traveler Community
+        </span>
+        <h2 class="title-serif" style="color: #ffffff; font-size: 2.3rem; line-height: 1.2; margin-bottom: 1rem;">
+          Your next extraordinary journey begins here.
+        </h2>
+        <p style="color: rgba(255,255,255,0.85); font-size: 1.05rem; line-height: 1.6;">
+          Organize custom stops with our Java Linked List engine, track trip budgets, and calculate transit routes in seconds.
+        </p>
+      </div>
+
+      <div class="auth-banner-content" style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">
+        &copy; Wayfarer &bull; Smart Travel Planner &amp; Route Optimizer
+      </div>
+    </div>
+
+    <!-- Right Form Section -->
+    <div class="auth-form-col">
+      <div class="auth-card-wrap">
+        <!-- Brand Header for Mobile -->
+        <div style="margin-bottom: 2rem;">
+          <a href="index.html" class="brand" style="margin-bottom: 0.5rem; display: inline-flex;">
+            <div class="brand-icon-wrap">
+              <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <circle cx="12" cy="12" r="10"/>
+                <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+              </svg>
+            </div>
+            <span>Wayfarer</span>
+          </a>
+          <p class="text-muted" style="font-size: 0.95rem; margin-bottom: 0;">Sign in to manage your itineraries and routes</p>
+        </div>
+
+        <!-- Auth Tabs -->
+        <div style="display: flex; border-bottom: 2px solid var(--color-border); margin-bottom: 1.75rem;">
+          <button id="tabLogin" class="btn" style="flex: 1; border-radius: 0; border: none; border-bottom: 2px solid var(--color-primary); color: var(--color-primary); background: none; font-weight: 700; padding: 0.75rem;">
+            Sign In
+          </button>
+          <button id="tabRegister" class="btn" style="flex: 1; border-radius: 0; border: none; border-bottom: 2px solid transparent; color: var(--color-text-muted); background: none; font-weight: 600; padding: 0.75rem;">
+            Create Account
+          </button>
+        </div>
+
+        <div id="authAlert" style="display: none;" class="alert"></div>
+
+        <!-- Login Form -->
+        <form id="loginForm">
+          <div class="form-group">
+            <label class="form-label" for="loginEmail">Email Address or Username</label>
+            <input type="text" id="loginEmail" class="form-control" placeholder="traveler@travelplanner.com" required autofocus>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="loginPassword">Password</label>
+            <div class="input-group">
+              <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required>
+              <button type="button" class="btn-toggle-pw" id="toggleLoginPw">Show</button>
+            </div>
+          </div>
+
+          <!-- Demo Credentials Helper -->
+          <div style="background: var(--bg-card-subtle); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 0.85rem; margin-bottom: 1.5rem; font-size: 0.82rem; color: var(--color-text-muted);">
+            <div style="font-weight: 700; color: var(--color-primary); margin-bottom: 0.25rem;">Quick Demo Accounts:</div>
+            <div>Traveler: <code>traveler@travelplanner.com</code> / <code>travel123</code></div>
+            <div>Admin: <code>admin@travelplanner.com</code> / <code>admin123</code></div>
+          </div>
+
+          <button type="submit" id="loginSubmitBtn" class="btn btn-primary btn-lg" style="width: 100%;">
+            Sign In to Account &rarr;
+          </button>
+        </form>
+
+        <!-- Register Form -->
+        <form id="registerForm" style="display: none;">
+          <div class="form-group">
+            <label class="form-label" for="regName">Full Name</label>
+            <input type="text" id="regName" class="form-control" placeholder="e.g. Alex Traveler" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="regEmail">Email Address</label>
+            <input type="email" id="regEmail" class="form-control" placeholder="alex@example.com" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="regPassword">Password</label>
+            <div class="input-group">
+              <input type="password" id="regPassword" class="form-control" placeholder="At least 6 characters" minlength="6" required>
+              <button type="button" class="btn-toggle-pw" id="toggleRegPw">Show</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="regConfirmPassword">Confirm Password</label>
+            <input type="password" id="regConfirmPassword" class="form-control" placeholder="Re-enter your password" minlength="6" required>
+          </div>
+
+          <button type="submit" id="regSubmitBtn" class="btn btn-primary btn-lg" style="width: 100%; margin-top: 0.5rem;">
+            Create Traveler Account &rarr;
+          </button>
+        </form>
+
+        <!-- Back to Home Link -->
+        <div style="text-align: center; margin-top: 2rem;">
+          <a href="index.html" class="text-muted" style="font-size: 0.9rem; font-weight: 500;">
+            &larr; Return to Wayfarer Home
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/wayfarer-api.js"></script>
+  <script src="js/wayfarer-ui.js"></script>
+  <script>
+    const tabLogin = document.getElementById('tabLogin');
+    const tabRegister = document.getElementById('tabRegister');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const authAlert = document.getElementById('authAlert');
+
+    WayfarerUI.bindPasswordToggle(document.getElementById('loginPassword'), document.getElementById('toggleLoginPw'));
+    WayfarerUI.bindPasswordToggle(document.getElementById('regPassword'), document.getElementById('toggleRegPw'));
+
+    // Check if user is already logged in
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const me = await WayfarerAPI.getMe();
+        if (me && me.authenticated) {
+          const isAdmin = (me.user && (me.user.role === 'ADMIN' || me.user.isAdmin)) || me.isAdmin || me.role === 'ADMIN';
+          window.location.href = isAdmin ? 'admin.html' : 'dashboard.html';
+          return;
+        }
+      } catch (ignored) {}
+
+      // URL param check for ?mode=register
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('mode') === 'register') {
+        showRegisterTab();
+      }
+    });
+
+    tabLogin.addEventListener('click', showLoginTab);
+    tabRegister.addEventListener('click', showRegisterTab);
+
+    function showLoginTab() {
+      tabLogin.style.borderBottomColor = 'var(--color-primary)';
+      tabLogin.style.color = 'var(--color-primary)';
+      tabLogin.style.fontWeight = '700';
+
+      tabRegister.style.borderBottomColor = 'transparent';
+      tabRegister.style.color = 'var(--color-text-muted)';
+      tabRegister.style.fontWeight = '600';
+
+      loginForm.style.display = 'block';
+      registerForm.style.display = 'none';
+      hideAlert();
+    }
+
+    function showRegisterTab() {
+      tabRegister.style.borderBottomColor = 'var(--color-primary)';
+      tabRegister.style.color = 'var(--color-primary)';
+      tabRegister.style.fontWeight = '700';
+
+      tabLogin.style.borderBottomColor = 'transparent';
+      tabLogin.style.color = 'var(--color-text-muted)';
+      tabLogin.style.fontWeight = '600';
+
+      registerForm.style.display = 'block';
+      loginForm.style.display = 'none';
+      hideAlert();
+    }
+
+    function showAlert(msg, isSuccess = false) {
+      authAlert.textContent = msg;
+      authAlert.className = 'alert ' + (isSuccess ? 'alert-success' : 'alert-danger');
+      authAlert.style.display = 'flex';
+    }
+
+    function hideAlert() {
+      authAlert.style.display = 'none';
+    }
+
+    // Login Submission
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideAlert();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      const btn = document.getElementById('loginSubmitBtn');
+
+      btn.disabled = true;
+      btn.textContent = 'Signing in...';
+
+      try {
+        const res = await WayfarerAPI.login(email, password);
+        if (res && res.success) {
+          showAlert('Signed in successfully! Redirecting...', true);
+          setTimeout(() => {
+            const redirect = new URLSearchParams(window.location.search).get('redirect');
+            if (redirect) {
+              window.location.href = redirect;
+            } else {
+              const isAdmin = (res.user && (res.user.role === 'ADMIN' || res.user.isAdmin)) || res.isAdmin || res.role === 'ADMIN';
+              window.location.href = isAdmin ? 'admin.html' : 'dashboard.html';
+            }
+          }, 600);
+        } else {
+          showAlert(res.message || res.error || 'Invalid email or password.');
+          btn.disabled = false;
+          btn.textContent = 'Sign In to Account \u2192';
+        }
+      } catch (err) {
+        showAlert(err.message || 'Connection error. Please try again.');
+        btn.disabled = false;
+        btn.textContent = 'Sign In to Account \u2192';
+      }
+    });
+
+    // Registration Submission
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideAlert();
+      const name = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const password = document.getElementById('regPassword').value;
+      const confirmPassword = document.getElementById('regConfirmPassword').value;
+      const btn = document.getElementById('regSubmitBtn');
+
+      if (password !== confirmPassword) {
+        showAlert('Passwords do not match. Please re-enter.');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = 'Creating Account...';
+
+      try {
+        const res = await WayfarerAPI.register(name, email, password);
+        if (res && res.success) {
+          showAlert('Account registered successfully! Redirecting to your dashboard...', true);
+          setTimeout(() => {
+            window.location.href = 'dashboard.html';
+          }, 700);
+        } else {
+          showAlert(res.message || res.error || 'Registration failed. Email may already be registered.');
+          btn.disabled = false;
+          btn.textContent = 'Create Traveler Account \u2192';
+        }
+      } catch (err) {
+        showAlert(err.message || 'Registration failed. Please try again.');
+        btn.disabled = false;
+        btn.textContent = 'Create Traveler Account \u2192';
+      }
+    });
+  </script>
+</body>
+</html>

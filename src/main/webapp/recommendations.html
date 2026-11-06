@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Recommendations — Wayfarer</title>
+  <meta name="description" content="Discover personalized travel recommendations optimized by a greedy multi-factor algorithm balancing rating, category affinity, and budget.">
+  <link rel="stylesheet" href="css/wayfarer-clean.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300A6B2'><path d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z'/></svg>">
+</head>
+<body>
+  <header class="navbar" id="mainNav"></header>
+
+  <main class="main-wrapper">
+    <div style="margin-bottom: 2rem;">
+      <span class="badge badge-accent" style="margin-bottom: 0.5rem;">Intelligent Discovery</span>
+      <h1 class="page-title">Smart Travel Recommendations</h1>
+      <p class="page-subtitle">Get tailor-made destination recommendations matched to your travel style, ratings, and target budget.</p>
+    </div>
+
+    <!-- Info Banner with link to DSA lab -->
+    <div style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-aqua-tint); border: 1px solid var(--color-primary-border); border-radius: var(--radius-sm); padding: 0.85rem 1.25rem; margin-bottom: 2rem; font-size: 0.9rem; color: var(--color-text-main);">
+      <div>
+        <strong>Multi-Factor Matching:</strong> Destinations are selected iteratively to balance ratings, your preferred travel theme, and remaining budget.
+      </div>
+      <a href="dsa.html#sectionGreedy" style="color: var(--color-primary); font-weight: 600; white-space: nowrap; margin-left: 1rem;">
+        View Heuristic Formula &rarr;
+      </a>
+    </div>
+
+    <!-- Recommendation Config Card -->
+    <div class="card" style="margin-bottom: 2.25rem; padding: 1.75rem;">
+      <form id="recommendationForm">
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.25rem; align-items: flex-end;" id="recomConfigGrid">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" for="recomStart">Starting Destination (Anchor)</label>
+            <select id="recomStart" class="form-select">
+              <option value="">Any Starting Point (Open Exploration)</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" for="recomCategory">Preferred Travel Interest</label>
+            <select id="recomCategory" class="form-select">
+              <option value="">All Categories (Balanced)</option>
+              <option value="Adventure">Adventure</option>
+              <option value="Cultural">Cultural</option>
+              <option value="Historical">Historical</option>
+              <option value="Relaxation">Relaxation</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" for="recomBudget">Target Budget ($ USD)</label>
+            <input type="number" id="recomBudget" class="form-control" placeholder="3000" min="500" step="100" value="3500">
+          </div>
+
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" for="recomStops">Desired Stops Count</label>
+            <select id="recomStops" class="form-select">
+              <option value="2">2 Destinations</option>
+              <option value="3" selected>3 Destinations</option>
+              <option value="4">4 Destinations</option>
+              <option value="5">5 Destinations</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top: 1.5rem; display: flex; justify-content: flex-end;">
+          <button type="submit" id="generateRecomBtn" class="btn btn-primary btn-lg">
+            Generate Recommendations (Greedy) &rarr;
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Results Area -->
+    <div id="recomResultsArea" style="display: none; margin-bottom: 3.5rem;">
+      <!-- Results Metrics Card -->
+      <div class="card metrics-summary-bar" style="margin-bottom: 2rem; background: var(--bg-card-subtle);">
+        <div>
+          <span class="badge badge-accent">Greedy Algorithm Selection</span>
+          <h2 class="title-serif" id="recomResultTitle" style="font-size: 1.8rem; color: var(--color-primary); margin: 0.35rem 0 0.2rem;">
+            Recommended Journey Plan
+          </h2>
+          <p class="text-muted" style="margin-bottom: 0; font-size: 0.95rem;">
+            Selected using locally optimal greedy heuristics balancing rating, category affinity, and cost.
+          </p>
+        </div>
+
+        <div class="metrics-stats-group">
+          <div>
+            <div style="font-size: 0.78rem; color: var(--color-text-muted); text-transform: uppercase; font-weight: 600;">Total Stops</div>
+            <div id="statRecomStops" style="font-size: 1.6rem; font-weight: 700; color: var(--color-primary);">0</div>
+          </div>
+          <div>
+            <div style="font-size: 0.78rem; color: var(--color-text-muted); text-transform: uppercase; font-weight: 600;">Accumulated Cost</div>
+            <div id="statRecomCost" style="font-size: 1.6rem; font-weight: 700; color: var(--color-primary);">$0.00</div>
+          </div>
+          <div>
+            <div style="font-size: 0.78rem; color: var(--color-text-muted); text-transform: uppercase; font-weight: 600;">Budget Remaining</div>
+            <div id="statRecomRemaining" style="font-size: 1.6rem; font-weight: 700; color: var(--color-success);">$0.00</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recommended Destinations Cards List -->
+      <div id="recomListContainer" style="margin-bottom: 2rem;"></div>
+
+      <!-- Quick Add To Itinerary CTA Bar -->
+      <div class="card" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; background: #ffffff; border: 2px solid var(--color-primary-border); padding: 1.25rem 1.75rem;">
+        <div>
+          <h4 class="title-serif" style="font-size: 1.15rem; margin-bottom: 0.2rem;">Like this suggested travel sequence?</h4>
+          <p class="text-muted" style="margin-bottom: 0; font-size: 0.9rem;">You can add these recommended stops directly into an itinerary.</p>
+        </div>
+        <button id="addRecomToTripBtn" class="btn btn-primary" onclick="openSaveRecomModal()">
+          + Add Recommended Journey to Itinerary
+        </button>
+      </div>
+
+      <!-- Expandable Academic Algorithm Details Section -->
+      <details style="margin-top: 2rem; background: var(--bg-card); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem;">
+        <summary style="font-weight: 700; color: var(--color-primary); cursor: pointer; font-size: 1rem;">
+          Academic Algorithm Details &bull; Greedy Multi-Factor Scoring
+        </summary>
+        <div style="padding-top: 1rem; color: var(--color-text-muted); font-size: 0.92rem; line-height: 1.65;">
+          <p>
+            <strong>Algorithm:</strong> <code>com.wayfarer.algorithm.GreedyRecommendationService</code>
+          </p>
+          <p>
+            At each iteration, the algorithm computes a dynamic heuristic score for every candidate unvisited destination using the formula:
+          </p>
+          <div style="background: var(--bg-card-subtle); padding: 0.85rem 1.25rem; border-radius: var(--radius-md); font-family: monospace; font-size: 0.88rem; margin: 0.75rem 0; color: var(--color-primary);">
+            Score = (Rating / 5.0) &times; 0.40 + (Category Affinity) &times; 0.35 + (Budget Viability) &times; 0.25 + (Direct Connection Bonus) &times; 0.10
+          </div>
+          <p>
+            The highest scoring candidate within the remaining budget is selected as the local optimum. Because the algorithm chooses the best immediate candidate without recursive backtracking, it executes in efficient $O(K \cdot N)$ time.
+          </p>
+        </div>
+      </details>
+    </div>
+
+    <!-- Feedback Message Area -->
+    <div id="recomStatusAlert" class="alert" style="display: none; margin-bottom: 3rem;"></div>
+  </main>
+
+  <!-- Add Recommended Sequence to Itinerary Modal -->
+  <div class="modal-backdrop" id="saveRecomModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">Save Recommended Stops</h3>
+        <button class="btn-close" id="closeSaveRecomBtn">&times;</button>
+      </div>
+      <form id="saveRecomForm">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="recomTargetItin">Select Target Itinerary</label>
+            <select id="recomTargetItin" class="form-select" required>
+              <option value="">Choose an existing trip...</option>
+            </select>
+          </div>
+          <p class="text-muted" style="font-size: 0.88rem; margin-bottom: 0;">
+            All recommended stops will be sequentially appended to this itinerary's Linked List.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelSaveRecomBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="confirmSaveRecomBtn">Append All Stops to Trip</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="footer"></footer>
+
+  <script src="js/wayfarer-api.js"></script>
+  <script src="js/wayfarer-ui.js"></script>
+  <script>
+    let allDestinations = [];
+    let currentRecommendationResult = null;
+    let userItineraries = [];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await WayfarerUI.initNavbar('recommendations');
+      WayfarerUI.initFooter();
+
+      await loadDestinations();
+      initForm();
+      initSaveModal();
+    });
+
+    async function loadDestinations() {
+      try {
+        const dests = await WayfarerAPI.getDestinations();
+        allDestinations = Array.isArray(dests) ? dests : [];
+
+        const startSelect = document.getElementById('recomStart');
+        allDestinations.forEach(d => {
+          const opt = document.createElement('option');
+          opt.value = d.destinationCode;
+          opt.textContent = `${d.destinationCode} \u2022 ${d.name} (${d.country}) - ${WayfarerUI.formatMoney(d.estimatedCost)}`;
+          startSelect.appendChild(opt);
+        });
+      } catch (err) {
+        console.error('Failed to load destinations:', err);
+      }
+    }
+
+    function initForm() {
+      const form = document.getElementById('recommendationForm');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const start = document.getElementById('recomStart').value;
+        const category = document.getElementById('recomCategory').value;
+        const budget = parseFloat(document.getElementById('recomBudget').value) || 3000;
+        const stops = parseInt(document.getElementById('recomStops').value) || 3;
+        const btn = document.getElementById('generateRecomBtn');
+
+        btn.disabled = true;
+        btn.textContent = 'Optimizing Heuristics...';
+        hideAlert();
+        document.getElementById('recomResultsArea').style.display = 'none';
+
+        try {
+          const payload = {
+            startDestinationCode: start || null,
+            preferredCategory: category || null,
+            totalBudget: budget,
+            desiredStops: stops
+          };
+
+          const res = await WayfarerAPI.getGreedyRecommendations(payload);
+          if (res && res.success && res.stops && res.stops.length > 0) {
+            currentRecommendationResult = res;
+            renderRecommendationResult(res);
+          } else {
+            showAlert(res.message || 'No recommendations could be generated matching this budget constraint. Try increasing budget.', false);
+          }
+        } catch (err) {
+          showAlert('Recommendation execution error: ' + err.message, false);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Generate Recommendations (Greedy) \u2192';
+        }
+      });
+    }
+
+    function renderRecommendationResult(res) {
+      document.getElementById('recomResultsArea').style.display = 'block';
+
+      document.getElementById('statRecomStops').textContent = res.stops.length;
+      document.getElementById('statRecomCost').textContent = WayfarerUI.formatMoney(res.totalEstimatedCost);
+      document.getElementById('statRecomRemaining').textContent = WayfarerUI.formatMoney(res.remainingBudget);
+
+      const container = document.getElementById('recomListContainer');
+      container.innerHTML = res.stops.map((item, idx) => {
+        const d = item.destination || {};
+        const imgUrl = WayfarerUI.getDestinationImage(d);
+
+        return `
+          <div class="recom-card">
+            <div class="stop-order-badge" style="background: var(--color-primary);">${idx + 1}</div>
+            <img src="${imgUrl}" alt="${WayfarerUI.escape(d.name)}" class="recom-thumb" onerror="this.src='${WayfarerUI.DEFAULT_IMAGES.default}'">
+            
+            <div style="flex: 1; min-width: 0;">
+              <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.25rem; flex-wrap: wrap;">
+                <span class="badge badge-primary">${WayfarerUI.escape(d.category || 'Travel')}</span>
+                <span style="font-weight: 700; color: var(--color-accent); font-size: 0.9rem;">★ ${d.rating || '4.8'}</span>
+                <span class="badge badge-neutral" style="font-size: 0.72rem;">Score: ${item.greedyScore}</span>
+              </div>
+
+              <h3 class="title-serif" style="font-size: 1.25rem; margin-bottom: 0.25rem;">
+                ${WayfarerUI.escape(d.name)}
+              </h3>
+              <div style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 0.5rem;">
+                📍 ${WayfarerUI.escape(d.city ? `${d.city}, ${d.country}` : d.country)} &bull; Duration: ${d.durationDays || 1} days
+              </div>
+              <p class="text-muted" style="font-size: 0.88rem; margin-bottom: 0;">
+                <em>"${WayfarerUI.escape(item.rationale || 'Selected based on interest affinity and available budget.')}"</em>
+              </p>
+            </div>
+
+            <div style="text-align: right; flex-shrink: 0; padding-left: 1rem; border-left: 1px solid var(--color-border);">
+              <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600;">Cost</div>
+              <div style="font-size: 1.25rem; font-weight: 700; color: var(--color-primary);">${WayfarerUI.formatMoney(d.estimatedCost)}</div>
+              <div style="font-size: 0.78rem; color: var(--color-text-muted); margin-top: 0.25rem;">Budget Left: ${WayfarerUI.formatMoney(item.remainingBudgetAfter)}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function initSaveModal() {
+      const modal = document.getElementById('saveRecomModal');
+      const closeBtn = document.getElementById('closeSaveRecomBtn');
+      const cancelBtn = document.getElementById('cancelSaveRecomBtn');
+      const form = document.getElementById('saveRecomForm');
+
+      const closeModal = () => modal.classList.remove('active');
+      closeBtn.addEventListener('click', closeModal);
+      cancelBtn.addEventListener('click', closeModal);
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const itinId = parseInt(document.getElementById('recomTargetItin').value);
+        if (!itinId) {
+          alert('Please select an itinerary.');
+          return;
+        }
+
+        const btn = document.getElementById('confirmSaveRecomBtn');
+        btn.disabled = true;
+        btn.textContent = 'Appending Stops...';
+
+        try {
+          const stops = currentRecommendationResult.stops || [];
+          for (const s of stops) {
+            if (s.destination && s.destination.id) {
+              await WayfarerAPI.addStop(itinId, s.destination.id, null, s.rationale || 'Greedy recommendation stop');
+            }
+          }
+          closeModal();
+          alert('All recommended stops added to itinerary!');
+          window.location.href = `itinerary-builder.html?id=${itinId}`;
+        } catch (err) {
+          alert('Error appending stops: ' + err.message);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Append All Stops to Trip';
+        }
+      });
+    }
+
+    window.openSaveRecomModal = async function() {
+      if (!WayfarerUI.currentUser) {
+        window.location.href = 'login.html?redirect=recommendations.html';
+        return;
+      }
+
+      try {
+        const list = await WayfarerAPI.getUserItineraries();
+        userItineraries = Array.isArray(list) ? list : [];
+
+        if (userItineraries.length === 0) {
+          if (confirm('You do not have any itineraries yet. Create one now?')) {
+            const name = prompt('Trip Name:', 'My Recommended Adventure');
+            if (name) {
+              const newTrip = await WayfarerAPI.createItinerary(name, 3500);
+              if (newTrip && newTrip.id) {
+                userItineraries.push(newTrip);
+              }
+            } else {
+              return;
+            }
+          } else {
+            return;
+          }
+        }
+
+        const select = document.getElementById('recomTargetItin');
+        select.innerHTML = '<option value="">Choose target itinerary...</option>' + 
+          userItineraries.map(it => `<option value="${it.id}">${WayfarerUI.escape(it.name)}</option>`).join('');
+
+        document.getElementById('saveRecomModal').classList.add('active');
+      } catch (err) {
+        alert('Could not fetch itineraries: ' + err.message);
+      }
+    };
+
+    function showAlert(msg, isSuccess) {
+      const el = document.getElementById('recomStatusAlert');
+      el.textContent = msg;
+      el.className = 'alert ' + (isSuccess ? 'alert-success' : 'alert-danger');
+      el.style.display = 'flex';
+    }
+
+    function hideAlert() {
+      document.getElementById('recomStatusAlert').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
+

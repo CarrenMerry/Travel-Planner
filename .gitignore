@@ -1,0 +1,7 @@
+target/
+db.properties
+*.log
+.idea/
+.vscode/
+temp/
+.DS_Store

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Accounts &bull; Wayfarer Admin</title>
+  <link rel="stylesheet" href="../css/wayfarer.css">
+</head>
+<body>
+
+  <div class="wf-portal-layout">
+    <!-- ADMIN SIDEBAR -->
+    <aside class="wf-sidebar" style="background-color:#0d1f18;">
+      <div class="wf-sidebar-header">
+        <div class="wf-brand">
+          <div class="wf-brand-icon" style="background:#be123c;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <div>
+            <div class="wf-brand-title">Wayfarer</div>
+            <div class="wf-brand-tag" style="color:#f87171;">Admin Workspace</div>
+          </div>
+        </div>
+      </div>
+
+      <ul class="wf-sidebar-nav">
+        <li class="wf-nav-item"><a href="dashboard.html" class="wf-nav-link"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>System Overview</a></li>
+        <li class="wf-nav-item"><a href="destinations.html" class="wf-nav-link"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>Manage Destinations</a></li>
+        <li class="wf-nav-item"><a href="connections.html" class="wf-nav-link"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="19" r="3"/><circle cx="18" cy="5" r="3"/><path d="M12 19h4.5a3.5 3.5 0 0 0 0-7h-9a3.5 3.5 0 0 1 0-7H12"/></svg>Graph Transit Edges</a></li>
+        <li class="wf-nav-item"><a href="users.html" class="wf-nav-link active"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>User Accounts</a></li>
+        <li class="wf-nav-item"><a href="itineraries.html" class="wf-nav-link"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>All Traveler Trips</a></li>
+        <li class="wf-nav-item" style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.08); padding-top:12px;">
+          <a href="../user/dashboard.html" class="wf-nav-link" style="color:#a7c4b5;">&larr; Switch to Traveler Portal</a>
+        </li>
+      </ul>
+
+      <div class="wf-sidebar-footer">
+        <div class="wf-user-bar">
+          <div class="wf-user-info">
+            <div class="wf-user-avatar" style="background:#be123c;">A</div>
+            <div class="wf-user-details">
+              <div class="wf-user-name wf-current-user-name">Administrator</div>
+              <div class="wf-user-role" style="color:#fca5a5;">ADMIN Role</div>
+            </div>
+          </div>
+          <button onclick="Wayfarer.logout()" title="Sign Out" style="background:none; border:none; cursor:pointer; color:#8da497; padding:4px;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="wf-main-content">
+      <header class="wf-topbar">
+        <div>
+          <h1 style="font-size:24px;">User Accounts &amp; Roles</h1>
+          <p style="font-size:13px; color:var(--text-muted);">Verified user identities and system roles from MySQL 'users' table.</p>
+        </div>
+      </header>
+
+      <div class="wf-content-container">
+        <!-- SECURITY NOTICE -->
+        <div style="background:var(--bg-surface); border:1px solid var(--border-light); border-left:4px solid var(--primary-forest); border-radius:var(--radius-sm); padding:16px 20px; margin-bottom:28px;">
+          <h3 style="font-size:15px; color:var(--primary-dark); margin-bottom:4px;">Security &amp; Data Protection</h3>
+          <p style="font-size:13px; color:var(--text-muted); line-height:1.6;">
+            All passwords are protected via BCrypt and salted SHA-256 hashes. Hashes are filtered out on the server side and never sent to client browsers. New accounts registered via the public signup form are strictly provisioned with the <code>USER</code> role.
+          </p>
+        </div>
+
+        <!-- TABLE WRAP -->
+        <div class="wf-table-wrap">
+          <table class="wf-table">
+            <thead>
+              <tr>
+                <th>User ID</th>
+                <th>Full Name</th>
+                <th>Email Address</th>
+                <th>System Role</th>
+                <th>Registered Date</th>
+              </tr>
+            </thead>
+            <tbody id="users-table-body">
+              <tr>
+                <td colspan="5" style="text-align:center; padding:32px; color:var(--text-muted);">Loading user records...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/wayfarer-api.js"></script>
+  <script src="../js/wayfarer-common.js"></script>
+  <script>
+    (async () => {
+      await Wayfarer.init('ADMIN');
+
+      try {
+        const users = await WayfarerAPI.getAdminUsers();
+        const tbody = document.getElementById('users-table-body');
+        if (!users || users.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:32px; color:var(--text-muted);">No users found.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = users.map(u => `
+          <tr>
+            <td><code style="font-family:var(--font-mono); font-weight:bold; color:var(--primary-forest);">#${u.id}</code></td>
+            <td><strong>${u.name}</strong></td>
+            <td>${u.email}</td>
+            <td>
+              <span class="wf-badge ${u.role === 'ADMIN' ? 'wf-badge-amber' : 'wf-badge-sage'}">
+                ${u.role}
+              </span>
+            </td>
+            <td style="color:var(--text-muted); font-size:13px;">${u.createdAt ? new Date(u.createdAt).toLocaleDateString() : 'N/A'}</td>
+          </tr>
+        `).join('');
+      } catch (e) {
+        console.error('Failed to load users:', e);
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explore Destinations — Wayfarer</title>
+  <meta name="description" content="Discover handpicked world destinations with authentic photography, estimated costs, and travel details.">
+  <link rel="stylesheet" href="css/wayfarer-clean.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300A6B2'><path d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z'/></svg>">
+</head>
+<body>
+  <header class="navbar" id="mainNav"></header>
+
+  <main class="main-wrapper">
+    <!-- Header -->
+    <div style="margin-bottom: 2rem;">
+      <span class="badge badge-accent" style="margin-bottom: 0.5rem;">Discovery Catalogue</span>
+      <h1 class="page-title">Explore Destinations</h1>
+      <p class="page-subtitle">Discover handpicked destinations across our global travel network, vetted with authentic costs and duration.</p>
+    </div>
+
+    <!-- Search & Filter Controls Card -->
+    <div class="card" style="margin-bottom: 2.25rem; padding: 1.5rem;">
+      <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; justify-content: space-between; margin-bottom: 1.25rem;">
+        <div style="flex: 1; min-width: 280px; position: relative;">
+          <input type="text" id="searchInput" class="form-control" placeholder="Search by destination name, city, or country...">
+        </div>
+        <div style="display: flex; gap: 0.75rem; align-items: center;">
+          <label for="sortSelect" style="font-size: 0.88rem; font-weight: 600; color: var(--color-primary); white-space: nowrap;">Sort by:</label>
+          <select id="sortSelect" class="form-select" style="min-width: 170px;">
+            <option value="featured">Featured / Code</option>
+            <option value="cost-asc">Price: Low to High</option>
+            <option value="cost-desc">Price: High to Low</option>
+            <option value="rating-desc">Rating: Highest First</option>
+            <option value="duration-desc">Duration: Longest First</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Category Filter Pills -->
+      <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;" id="categoryFilterContainer">
+        <button class="btn btn-primary btn-sm active" data-category="ALL">All Destinations (<span id="countAll">0</span>)</button>
+        <button class="btn btn-secondary btn-sm" data-category="Adventure">Adventure (<span id="countAdv">0</span>)</button>
+        <button class="btn btn-secondary btn-sm" data-category="Cultural">Cultural (<span id="countCult">0</span>)</button>
+        <button class="btn btn-secondary btn-sm" data-category="Historical">Historical (<span id="countHist">0</span>)</button>
+        <button class="btn btn-secondary btn-sm" data-category="Relaxation">Relaxation (<span id="countRel">0</span>)</button>
+      </div>
+    </div>
+
+    <!-- Destinations Grid -->
+    <div class="grid-3" id="destinationsGrid">
+      <div style="grid-column: 1 / -1; text-align: center; color: var(--color-text-muted); padding: 4rem;">
+        Loading destinations catalog from database...
+      </div>
+    </div>
+  </main>
+
+  <!-- Destination Detail Modal -->
+  <div class="modal-backdrop" id="detailModal">
+    <div class="modal-dialog" style="max-width: 620px;">
+      <div class="modal-header">
+        <h3 class="modal-title" id="detailModalTitle">Destination Overview</h3>
+        <button class="btn-close" id="closeDetailModalBtn">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 0;">
+        <div style="position: relative; height: 240px; background: var(--bg-card-subtle);">
+          <img id="detailModalImg" src="" alt="" style="width: 100%; height: 100%; object-fit: cover;">
+          <span class="badge badge-primary" id="detailModalBadge" style="position: absolute; top: 1rem; left: 1rem;">Cultural</span>
+          <span id="detailModalRating" style="position: absolute; bottom: 1rem; right: 1rem; background: rgba(255,255,255,0.92); padding: 0.25rem 0.65rem; border-radius: var(--radius-full); font-weight: 700; color: var(--color-accent); font-size: 0.9rem;">★ 4.9</span>
+        </div>
+        <div style="padding: 1.75rem;">
+          <div style="font-size: 0.9rem; color: var(--color-text-muted); margin-bottom: 0.35rem;" id="detailModalLocation">📍 Paris, France</div>
+          <h2 class="title-serif" id="detailModalName" style="font-size: 1.6rem; color: var(--color-primary); margin-bottom: 0.85rem;"></h2>
+          <p id="detailModalDesc" style="color: var(--color-text-main); line-height: 1.65; font-size: 0.95rem; margin-bottom: 1.5rem;"></p>
+
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; background: var(--bg-card-subtle); padding: 1.25rem; border-radius: var(--radius-md); text-align: center; margin-bottom: 1.5rem;">
+            <div>
+              <div style="font-size: 0.78rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600;">Est. Budget</div>
+              <div id="detailModalCost" style="font-size: 1.25rem; font-weight: 700; color: var(--color-primary); margin-top: 0.2rem;"></div>
+            </div>
+            <div>
+              <div style="font-size: 0.78rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600;">Duration</div>
+              <div id="detailModalDays" style="font-size: 1.25rem; font-weight: 700; color: var(--color-primary); margin-top: 0.2rem;"></div>
+            </div>
+            <div>
+              <div style="font-size: 0.78rem; text-transform: uppercase; color: var(--color-text-muted); font-weight: 600;">Activities</div>
+              <div id="detailModalActivities" style="font-size: 1.25rem; font-weight: 700; color: var(--color-primary); margin-top: 0.2rem;"></div>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+            <button type="button" class="btn btn-secondary" id="closeDetailBtn">Close</button>
+            <button type="button" class="btn btn-primary" id="detailModalAddBtn">+ Add to Itinerary</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add to Itinerary Modal -->
+  <div class="modal-backdrop" id="addStopModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">Add to Itinerary</h3>
+        <button class="btn-close" id="closeAddStopModalBtn">&times;</button>
+      </div>
+      <form id="addStopForm">
+        <div class="modal-body">
+          <input type="hidden" id="selectedDestId">
+          <div style="margin-bottom: 1.25rem; display: flex; gap: 1rem; align-items: center; background: var(--bg-card-subtle); padding: 0.85rem; border-radius: var(--radius-md);">
+            <img id="addModalThumb" src="" alt="" style="width: 70px; height: 54px; border-radius: var(--radius-sm); object-fit: cover;">
+            <div>
+              <div id="modalDestName" style="font-size: 1.1rem; font-weight: 700; color: var(--color-primary);"></div>
+              <div id="modalDestCost" style="font-size: 0.95rem; color: var(--color-accent); font-weight: 600;"></div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="selectItinerary">Select Trip Itinerary</label>
+            <select id="selectItinerary" class="form-select" required>
+              <option value="">Choose an existing trip...</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="stopNotes">Stop Notes (Optional)</label>
+            <input type="text" id="stopNotes" class="form-control" placeholder="e.g. Visit art museum in afternoon, book hotel near center">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelAddStopBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="confirmAddStopBtn">Add Stop</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="footer"></footer>
+
+  <script src="js/wayfarer-api.js"></script>
+  <script src="js/wayfarer-ui.js"></script>
+  <script>
+    let allDestinations = [];
+    let userItineraries = [];
+    let currentCategory = 'ALL';
+    let activeDetailDest = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await WayfarerUI.initNavbar('explore');
+      WayfarerUI.initFooter();
+
+      // Check URL query parameters (e.g. ?category=Adventure&query=Tokyo)
+      const params = new URLSearchParams(window.location.search);
+      const urlCategory = params.get('category');
+      const urlQuery = params.get('query');
+
+      if (urlCategory) {
+        currentCategory = urlCategory;
+      }
+      if (urlQuery) {
+        document.getElementById('searchInput').value = urlQuery;
+      }
+
+      await loadDestinations();
+      initFilters();
+      initAddStopModal();
+      initDetailModal();
+    });
+
+    async function loadDestinations() {
+      const container = document.getElementById('destinationsGrid');
+      try {
+        const data = await WayfarerAPI.getDestinations();
+        allDestinations = Array.isArray(data) ? data : [];
+
+        updateCategoryCounts();
+        applyFilters();
+      } catch (err) {
+        container.innerHTML = `
+          <div style="grid-column: 1 / -1;" class="alert alert-danger">
+            Failed to retrieve destinations from database: ${WayfarerUI.escape(err.message)}
+          </div>
+        `;
+      }
+    }
+
+    function updateCategoryCounts() {
+      document.getElementById('countAll').textContent = allDestinations.length;
+      document.getElementById('countAdv').textContent = allDestinations.filter(d => (d.category || '').toLowerCase() === 'adventure').length;
+      document.getElementById('countCult').textContent = allDestinations.filter(d => (d.category || '').toLowerCase() === 'cultural').length;
+      document.getElementById('countHist').textContent = allDestinations.filter(d => (d.category || '').toLowerCase() === 'historical').length;
+      document.getElementById('countRel').textContent = allDestinations.filter(d => (d.category || '').toLowerCase() === 'relaxation').length;
+    }
+
+    function initFilters() {
+      const searchInput = document.getElementById('searchInput');
+      searchInput.addEventListener('input', applyFilters);
+
+      const sortSelect = document.getElementById('sortSelect');
+      sortSelect.addEventListener('change', applyFilters);
+
+      const filterButtons = document.querySelectorAll('#categoryFilterContainer button');
+      filterButtons.forEach(btn => {
+        if (btn.dataset.category.toLowerCase() === currentCategory.toLowerCase()) {
+          btn.classList.add('active', 'btn-primary');
+          btn.classList.remove('btn-secondary');
+        } else {
+          btn.classList.remove('active', 'btn-primary');
+          btn.classList.add('btn-secondary');
+        }
+
+        btn.addEventListener('click', () => {
+          filterButtons.forEach(b => {
+            b.classList.remove('active', 'btn-primary');
+            b.classList.add('btn-secondary');
+          });
+          btn.classList.add('active', 'btn-primary');
+          btn.classList.remove('btn-secondary');
+          currentCategory = btn.dataset.category;
+          applyFilters();
+        });
+      });
+    }
+
+    function applyFilters() {
+      const query = document.getElementById('searchInput').value.trim().toLowerCase();
+      const sort = document.getElementById('sortSelect').value;
+
+      let filtered = allDestinations.filter(d => {
+        const matchesCategory = (currentCategory === 'ALL') || 
+          ((d.category || '').toLowerCase() === currentCategory.toLowerCase());
+        
+        const nameMatch = d.name && d.name.toLowerCase().includes(query);
+        const countryMatch = d.country && d.country.toLowerCase().includes(query);
+        const cityMatch = d.city && d.city.toLowerCase().includes(query);
+
+        return matchesCategory && (nameMatch || countryMatch || cityMatch || query === '');
+      });
+
+      // Sorting
+      if (sort === 'cost-asc') {
+        filtered.sort((a, b) => (a.estimatedCost || 0) - (b.estimatedCost || 0));
+      } else if (sort === 'cost-desc') {
+        filtered.sort((a, b) => (b.estimatedCost || 0) - (a.estimatedCost || 0));
+      } else if (sort === 'rating-desc') {
+        filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+      } else if (sort === 'duration-desc') {
+        filtered.sort((a, b) => (b.durationDays || 0) - (a.durationDays || 0));
+      }
+
+      renderDestinations(filtered);
+    }
+
+    function renderDestinations(list) {
+      const container = document.getElementById('destinationsGrid');
+      if (list.length === 0) {
+        container.innerHTML = `
+          <div style="grid-column: 1 / -1;" class="empty-state">
+            <div class="empty-state-icon">🔍</div>
+            <div class="empty-state-title">No destinations match your search</div>
+            <p class="empty-state-desc">Try clearing your filters or search query to explore other locations.</p>
+            <button class="btn btn-secondary btn-sm" onclick="resetFilters()">Reset All Filters</button>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = list.map(d => {
+        const imgUrl = WayfarerUI.getDestinationImage(d);
+        return `
+          <div class="travel-card">
+            <div class="travel-card-media" style="cursor: pointer;" onclick="openDetailModal(${d.id})">
+              <img src="${imgUrl}" alt="${WayfarerUI.escape(d.name)}" class="travel-card-img" onerror="this.src='${WayfarerUI.DEFAULT_IMAGES.default}'">
+              <span class="badge badge-primary travel-card-badge">${WayfarerUI.escape(d.category || 'Travel')}</span>
+              <span class="travel-card-rating">★ ${d.rating || '4.8'}</span>
+            </div>
+            <div class="travel-card-body">
+              <div class="travel-card-location">
+                <span>📍</span>
+                <span>${WayfarerUI.escape(d.city ? `${d.city}, ${d.country}` : d.country)}</span>
+                <span class="badge badge-neutral" style="font-size: 0.72rem; margin-left: auto;">${WayfarerUI.escape(d.destinationCode)}</span>
+              </div>
+              <h3 class="travel-card-title" style="cursor: pointer;" onclick="openDetailModal(${d.id})">${WayfarerUI.escape(d.name)}</h3>
+              <p class="travel-card-desc">${WayfarerUI.escape(d.description || 'Picturesque sights, cultural landmarks, and activities.')}</p>
+              
+              <div style="display: flex; gap: 1rem; font-size: 0.82rem; color: var(--color-text-muted); margin-bottom: 1rem;">
+                <span>🕒 ${d.durationDays || 1} day${d.durationDays === 1 ? '' : 's'}</span>
+                <span>🎯 ${d.activitiesCount || 0} activities</span>
+              </div>
+
+              <div class="travel-card-meta">
+                <div>
+                  <div class="travel-card-price">${WayfarerUI.formatMoney(d.estimatedCost)}</div>
+                  <div style="font-size: 0.78rem; color: var(--color-text-muted);">estimated cost</div>
+                </div>
+                <div style="display: flex; gap: 0.4rem;">
+                  <button class="btn btn-secondary btn-sm" onclick="openDetailModal(${d.id})" title="View Details">
+                    Details
+                  </button>
+                  <button class="btn btn-primary btn-sm" onclick="openAddStopModal(${d.id})">
+                    + Add to Trip
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function resetFilters() {
+      document.getElementById('searchInput').value = '';
+      currentCategory = 'ALL';
+      document.querySelectorAll('#categoryFilterContainer button').forEach(b => {
+        if (b.dataset.category === 'ALL') {
+          b.classList.add('active', 'btn-primary');
+          b.classList.remove('btn-secondary');
+        } else {
+          b.classList.remove('active', 'btn-primary');
+          b.classList.add('btn-secondary');
+        }
+      });
+      applyFilters();
+    }
+
+    // Detail Modal Initialization
+    function initDetailModal() {
+      const modal = document.getElementById('detailModal');
+      const closeBtn = document.getElementById('closeDetailModalBtn');
+      const closeDetailBtn = document.getElementById('closeDetailBtn');
+      const addBtn = document.getElementById('detailModalAddBtn');
+
+      const closeModal = () => modal.classList.remove('active');
+      closeBtn.addEventListener('click', closeModal);
+      closeDetailBtn.addEventListener('click', closeModal);
+
+      addBtn.addEventListener('click', () => {
+        closeModal();
+        if (activeDetailDest) {
+          openAddStopModal(activeDetailDest.id);
+        }
+      });
+    }
+
+    window.openDetailModal = function(destId) {
+      const dest = allDestinations.find(x => x.id === destId);
+      if (!dest) return;
+      activeDetailDest = dest;
+
+      document.getElementById('detailModalTitle').textContent = dest.name;
+      document.getElementById('detailModalName').textContent = dest.name;
+      document.getElementById('detailModalLocation').textContent = `📍 ${dest.city ? `${dest.city}, ${dest.country}` : dest.country} • Code: ${dest.destinationCode}`;
+      document.getElementById('detailModalDesc').textContent = dest.description || 'Experience extraordinary sights, natural beauty, and local traditions.';
+      document.getElementById('detailModalBadge').textContent = dest.category || 'Travel';
+      document.getElementById('detailModalRating').textContent = `★ ${dest.rating || '4.8'}`;
+      document.getElementById('detailModalCost').textContent = WayfarerUI.formatMoney(dest.estimatedCost);
+      document.getElementById('detailModalDays').textContent = `${dest.durationDays || 1} day${dest.durationDays === 1 ? '' : 's'}`;
+      document.getElementById('detailModalActivities').textContent = `${dest.activitiesCount || 0} sites`;
+
+      const imgEl = document.getElementById('detailModalImg');
+      imgEl.src = WayfarerUI.getDestinationImage(dest);
+      imgEl.onerror = () => { imgEl.src = WayfarerUI.DEFAULT_IMAGES.default; };
+
+      document.getElementById('detailModal').classList.add('active');
+    };
+
+    // Add Stop Modal Initialization
+    function initAddStopModal() {
+      const modal = document.getElementById('addStopModal');
+      const closeBtn = document.getElementById('closeAddStopModalBtn');
+      const cancelBtn = document.getElementById('cancelAddStopBtn');
+      const form = document.getElementById('addStopForm');
+
+      const closeModal = () => modal.classList.remove('active');
+      closeBtn.addEventListener('click', closeModal);
+      cancelBtn.addEventListener('click', closeModal);
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const itineraryId = parseInt(document.getElementById('selectItinerary').value);
+        const destinationId = parseInt(document.getElementById('selectedDestId').value);
+        const notes = document.getElementById('stopNotes').value.trim();
+        const btn = document.getElementById('confirmAddStopBtn');
+
+        if (!itineraryId) {
+          alert('Please select an itinerary.');
+          return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'Adding Stop...';
+
+        try {
+          const res = await WayfarerAPI.addStop(itineraryId, destinationId, null, notes);
+          if (res && res.success) {
+            closeModal();
+            if (confirm('Stop added to itinerary! Open the Itinerary Builder now?')) {
+              window.location.href = `itinerary-builder.html?id=${itineraryId}`;
+            }
+          } else {
+            alert(res.message || 'Could not add stop.');
+          }
+        } catch (err) {
+          alert('Error: ' + err.message);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Add Stop';
+        }
+      });
+    }
+
+    window.openAddStopModal = async function(destId) {
+      if (!WayfarerUI.currentUser) {
+        window.location.href = 'login.html?redirect=explore.html';
+        return;
+      }
+
+      const dest = allDestinations.find(x => x.id === destId);
+      if (!dest) return;
+
+      if (userItineraries.length === 0) {
+        try {
+          const list = await WayfarerAPI.getUserItineraries();
+          if (Array.isArray(list)) userItineraries = list;
+        } catch (e) {}
+      }
+
+      if (userItineraries.length === 0) {
+        if (confirm('You do not have any saved itineraries yet. Create your first trip now?')) {
+          const name = prompt('Enter a name for your new trip:', 'My First Journey');
+          if (name) {
+            const newTrip = await WayfarerAPI.createItinerary(name, 2500);
+            if (newTrip && newTrip.id) {
+              userItineraries.push(newTrip);
+            }
+          } else {
+            return;
+          }
+        } else {
+          return;
+        }
+      }
+
+      document.getElementById('selectedDestId').value = dest.id;
+      document.getElementById('modalDestName').textContent = dest.name;
+      document.getElementById('modalDestCost').textContent = `${WayfarerUI.formatMoney(dest.estimatedCost)} • ${dest.durationDays || 1} days`;
+      document.getElementById('addModalThumb').src = WayfarerUI.getDestinationImage(dest);
+
+      const select = document.getElementById('selectItinerary');
+      select.innerHTML = '<option value="">Choose an itinerary...</option>' + 
+        userItineraries.map(it => `<option value="${it.id}">${WayfarerUI.escape(it.name)}</option>`).join('');
+
+      document.getElementById('addStopModal').classList.add('active');
+    };
+  </script>
+</body>
+</html>

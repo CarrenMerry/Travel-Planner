@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Graph Transit Edges &bull; Wayfarer Admin</title>
+  <link rel="stylesheet" href="../css/wayfarer.css">
+  <style>
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 39, 29, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-box {
+      background: var(--bg-surface);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 500px;
+      padding: 32px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border-light);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="wf-portal-layout">
+    <!-- ADMIN SIDEBAR -->
+    <aside class="wf-sidebar" style="background-color:#0d1f18;">
+      <div class="wf-sidebar-header">
+        <div class="wf-brand">
+          <div class="wf-brand-icon" style="background:#be123c;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <div>
+            <div class="wf-brand-title">Wayfarer</div>
+            <div class="wf-brand-tag" style="color:#f87171;">Admin Workspace</div>
+          </div>
+        </div>
+      </div>
+
+      <ul class="wf-sidebar-nav">
+        <li class="wf-nav-item"><a href="dashboard.html" class="wf-nav-link"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>System Overview</a></li>
+        <li class="wf-nav-item"><a href="destinations.html" class="wf-nav-link"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>Manage Destinations</a></li>
+        <li class="wf-nav-item"><a href="connections.html" class="wf-nav-link active"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="19" r="3"/><circle cx="18" cy="5" r="3"/><path d="M12 19h4.5a3.5 3.5 0 0 0 0-7h-9a3.5 3.5 0 0 1 0-7H12"/></svg>Graph Transit Edges</a></li>
+        <li class="wf-nav-item"><a href="users.html" class="wf-nav-link"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>User Accounts</a></li>
+        <li class="wf-nav-item"><a href="itineraries.html" class="wf-nav-link"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>All Traveler Trips</a></li>
+        <li class="wf-nav-item" style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.08); padding-top:12px;">
+          <a href="../user/dashboard.html" class="wf-nav-link" style="color:#a7c4b5;">&larr; Switch to Traveler Portal</a>
+        </li>
+      </ul>
+
+      <div class="wf-sidebar-footer">
+        <div class="wf-user-bar">
+          <div class="wf-user-info">
+            <div class="wf-user-avatar" style="background:#be123c;">A</div>
+            <div class="wf-user-details">
+              <div class="wf-user-name wf-current-user-name">Administrator</div>
+              <div class="wf-user-role" style="color:#fca5a5;">ADMIN Role</div>
+            </div>
+          </div>
+          <button onclick="Wayfarer.logout()" title="Sign Out" style="background:none; border:none; cursor:pointer; color:#8da497; padding:4px;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="wf-main-content">
+      <header class="wf-topbar">
+        <div>
+          <h1 style="font-size:24px;">Graph Transit Edges</h1>
+          <p style="font-size:13px; color:var(--text-muted);">Manage travel connections in MySQL 'travel_connections' table (powers BFS Route Finder).</p>
+        </div>
+        <button class="wf-btn wf-btn-primary wf-btn-sm" onclick="openAddConnectionModal()">
+          + Add New Transit Edge
+        </button>
+      </header>
+
+      <div class="wf-content-container">
+        <!-- THEORY NOTE -->
+        <div style="background:var(--bg-surface); border:1px solid var(--border-light); border-left:4px solid var(--primary-forest); border-radius:var(--radius-sm); padding:16px 20px; margin-bottom:28px;">
+          <h3 style="font-size:15px; color:var(--primary-dark); margin-bottom:4px;">DSA Requirement 2: TravelGraph Adjacency List Edges</h3>
+          <p style="font-size:13px; color:var(--text-muted); line-height:1.6;">
+            Each record in this table represents a flight, rail, or overland connection between two destination vertices in the custom Java <code>TravelGraph</code>. Edges added or deleted here automatically update the in-memory adjacency list.
+          </p>
+        </div>
+
+        <!-- TABLE WRAP -->
+        <div class="wf-table-wrap">
+          <table class="wf-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Origin Destination</th>
+                <th>Target Destination</th>
+                <th>Distance (km)</th>
+                <th>Est. Travel Cost</th>
+                <th>Duration (mins)</th>
+                <th style="text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="connections-table-body">
+              <tr>
+                <td colspan="7" style="text-align:center; padding:32px; color:var(--text-muted);">Loading travel connections...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL: ADD CONNECTION -->
+  <div class="modal-overlay" id="conn-modal">
+    <div class="modal-box">
+      <h2 style="font-size:22px; margin-bottom:6px;">Add Travel Edge</h2>
+      <p style="font-size:13px; color:var(--text-muted); margin-bottom:24px;">Connect two vertices in the transit graph network.</p>
+
+      <form id="conn-form">
+        <div class="wf-form-group">
+          <label class="wf-label" for="select-conn-source">Source Destination (Vertex A)</label>
+          <select id="select-conn-source" class="wf-select" required>
+            <option value="">-- Choose Origin --</option>
+          </select>
+        </div>
+
+        <div class="wf-form-group">
+          <label class="wf-label" for="select-conn-target">Target Destination (Vertex B)</label>
+          <select id="select-conn-target" class="wf-select" required>
+            <option value="">-- Choose Target --</option>
+          </select>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div class="wf-form-group">
+            <label class="wf-label" for="conn-distance">Distance (km)</label>
+            <input type="number" id="conn-distance" class="wf-input" placeholder="450" min="1" step="1" required>
+          </div>
+          <div class="wf-form-group">
+            <label class="wf-label" for="conn-cost">Travel Cost ($ USD)</label>
+            <input type="number" id="conn-cost" class="wf-input" placeholder="120" min="0" step="5" required>
+          </div>
+        </div>
+
+        <div class="wf-form-group">
+          <label class="wf-label" for="conn-minutes">Estimated Travel Time (Minutes)</label>
+          <input type="number" id="conn-minutes" class="wf-input" placeholder="180" min="10" step="10">
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:28px;">
+          <button type="button" class="wf-btn wf-btn-secondary" onclick="closeConnModal()">Cancel</button>
+          <button type="submit" class="wf-btn wf-btn-primary">Add Edge to Graph</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../js/wayfarer-api.js"></script>
+  <script src="../js/wayfarer-common.js"></script>
+  <script>
+    let destinations = [];
+    let connections = [];
+
+    (async () => {
+      await Wayfarer.init('ADMIN');
+
+      try {
+        destinations = await WayfarerAPI.getDestinations();
+        const srcSelect = document.getElementById('select-conn-source');
+        const tgtSelect = document.getElementById('select-conn-target');
+
+        destinations.forEach(d => {
+          const opt1 = document.createElement('option');
+          opt1.value = d.id;
+          opt1.textContent = `${d.name} (${d.destinationCode})`;
+          srcSelect.appendChild(opt1);
+
+          const opt2 = document.createElement('option');
+          opt2.value = d.id;
+          opt2.textContent = `${d.name} (${d.destinationCode})`;
+          tgtSelect.appendChild(opt2);
+        });
+      } catch (e) {}
+
+      loadConnections();
+
+      document.getElementById('conn-form').addEventListener('submit', handleAddConnection);
+    })();
+
+    async function loadConnections() {
+      try {
+        connections = await WayfarerAPI.getConnections();
+        renderTable();
+      } catch (e) {
+        console.error('Error loading connections:', e);
+      }
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('connections-table-body');
+      if (!connections || connections.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:32px; color:var(--text-muted);">No connections found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = connections.map(c => `
+        <tr>
+          <td><code style="font-family:var(--font-mono); color:var(--text-subtle);">#${c.id}</code></td>
+          <td><strong>${c.sourceName || c.sourceCode}</strong> <span class="wf-badge wf-badge-sage" style="font-size:11px;">${c.sourceCode}</span></td>
+          <td><strong>${c.targetName || c.targetCode}</strong> <span class="wf-badge wf-badge-sage" style="font-size:11px;">${c.targetCode}</span></td>
+          <td><strong>${c.distanceKm} km</strong></td>
+          <td>$${Number(c.estimatedTravelCost).toLocaleString()}</td>
+          <td>${c.estimatedTravelMinutes ? `${c.estimatedTravelMinutes} mins` : 'N/A'}</td>
+          <td style="text-align:right;">
+            <button class="wf-btn wf-btn-danger wf-btn-sm" onclick="deleteConnection(${c.id})">Delete Edge</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openAddConnectionModal() {
+      document.getElementById('conn-form').reset();
+      document.getElementById('conn-modal').style.display = 'flex';
+    }
+
+    function closeConnModal() {
+      document.getElementById('conn-modal').style.display = 'none';
+    }
+
+    async function handleAddConnection(e) {
+      e.preventDefault();
+      const sId = parseInt(document.getElementById('select-conn-source').value);
+      const tId = parseInt(document.getElementById('select-conn-target').value);
+      const dist = parseFloat(document.getElementById('conn-distance').value) || 0;
+      const cost = parseFloat(document.getElementById('conn-cost').value) || 0;
+      const minsVal = document.getElementById('conn-minutes').value;
+      const mins = minsVal ? parseInt(minsVal) : null;
+
+      if (sId === tId) {
+        Wayfarer.showToast("Source and target destinations cannot be identical.", true);
+        return;
+      }
+
+      try {
+        const res = await WayfarerAPI.createConnection({
+          sourceDestinationId: sId,
+          targetDestinationId: tId,
+          distanceKm: dist,
+          estimatedTravelCost: cost,
+          estimatedTravelMinutes: mins
+        });
+
+        if (res.success) {
+          Wayfarer.showToast("Travel edge added to graph network!");
+          closeConnModal();
+          loadConnections();
+        } else {
+          Wayfarer.showToast(res.error || "Failed to create connection.", true);
+        }
+      } catch (err) {
+        Wayfarer.showToast("Error: " + err.message, true);
+      }
+    }
+
+    async function deleteConnection(id) {
+      if (!confirm("Are you sure you want to remove this graph edge?")) return;
+      try {
+        const res = await WayfarerAPI.deleteConnection(id);
+        if (res.success) {
+          Wayfarer.showToast("Edge removed from graph.");
+          loadConnections();
+        } else {
+          Wayfarer.showToast(res.error || "Failed to delete edge.", true);
+        }
+      } catch (err) {
+        Wayfarer.showToast("Error: " + err.message, true);
+      }
+    }
+  </script>
+</body>
+</html>

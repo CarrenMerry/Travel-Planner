@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Destinations &bull; Wayfarer Admin</title>
+  <link rel="stylesheet" href="../css/wayfarer.css">
+  <style>
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 39, 29, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-box {
+      background: var(--bg-surface);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 580px;
+      padding: 32px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border-light);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="wf-portal-layout">
+    <!-- ADMIN SIDEBAR -->
+    <aside class="wf-sidebar" style="background-color:#0d1f18;">
+      <div class="wf-sidebar-header">
+        <div class="wf-brand">
+          <div class="wf-brand-icon" style="background:#be123c;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
+          <div>
+            <div class="wf-brand-title">Wayfarer</div>
+            <div class="wf-brand-tag" style="color:#f87171;">Admin Workspace</div>
+          </div>
+        </div>
+      </div>
+
+      <ul class="wf-sidebar-nav">
+        <li class="wf-nav-item"><a href="dashboard.html" class="wf-nav-link"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>System Overview</a></li>
+        <li class="wf-nav-item"><a href="destinations.html" class="wf-nav-link active"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>Manage Destinations</a></li>
+        <li class="wf-nav-item"><a href="connections.html" class="wf-nav-link"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="19" r="3"/><circle cx="18" cy="5" r="3"/><path d="M12 19h4.5a3.5 3.5 0 0 0 0-7h-9a3.5 3.5 0 0 1 0-7H12"/></svg>Graph Transit Edges</a></li>
+        <li class="wf-nav-item"><a href="users.html" class="wf-nav-link"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>User Accounts</a></li>
+        <li class="wf-nav-item"><a href="itineraries.html" class="wf-nav-link"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>All Traveler Trips</a></li>
+        <li class="wf-nav-item" style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.08); padding-top:12px;">
+          <a href="../user/dashboard.html" class="wf-nav-link" style="color:#a7c4b5;">&larr; Switch to Traveler Portal</a>
+        </li>
+      </ul>
+
+      <div class="wf-sidebar-footer">
+        <div class="wf-user-bar">
+          <div class="wf-user-info">
+            <div class="wf-user-avatar" style="background:#be123c;">A</div>
+            <div class="wf-user-details">
+              <div class="wf-user-name wf-current-user-name">Administrator</div>
+              <div class="wf-user-role" style="color:#fca5a5;">ADMIN Role</div>
+            </div>
+          </div>
+          <button onclick="Wayfarer.logout()" title="Sign Out" style="background:none; border:none; cursor:pointer; color:#8da497; padding:4px;">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="wf-main-content">
+      <header class="wf-topbar">
+        <div>
+          <h1 style="font-size:24px;">Manage Destinations</h1>
+          <p style="font-size:13px; color:var(--text-muted);">Inspect, create, edit, and remove destinations stored in MySQL.</p>
+        </div>
+        <button class="wf-btn wf-btn-primary wf-btn-sm" onclick="openCreateModal()">
+          + Add New Destination
+        </button>
+      </header>
+
+      <div class="wf-content-container">
+        <!-- FILTER BAR -->
+        <div style="margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; gap:16px;">
+          <input type="text" id="admin-dest-search" class="wf-input" placeholder="Search by name, country, city, code..." style="max-width:380px;">
+          <span style="font-size:13px; color:var(--text-muted);" id="table-count-label">Loading records...</span>
+        </div>
+
+        <!-- TABLE WRAP -->
+        <div class="wf-table-wrap">
+          <table class="wf-table">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Destination Name</th>
+                <th>Country &bull; City</th>
+                <th>Category</th>
+                <th>Est. Cost</th>
+                <th>Stay (Days)</th>
+                <th>Rating</th>
+                <th style="text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="dest-table-body">
+              <tr>
+                <td colspan="8" style="text-align:center; padding:32px; color:var(--text-muted);">
+                  Loading destinations from database...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- MODAL: ADD / EDIT DESTINATION -->
+  <div class="modal-overlay" id="dest-modal">
+    <div class="modal-box">
+      <h2 style="font-size:22px; margin-bottom:6px;" id="modal-heading">Add Destination</h2>
+      <p style="font-size:13px; color:var(--text-muted); margin-bottom:24px;">Configures a graph vertex and catalog item.</p>
+
+      <form id="dest-form">
+        <input type="hidden" id="form-dest-id">
+
+        <div style="display:grid; grid-template-columns:1fr 2fr; gap:16px;">
+          <div class="wf-form-group">
+            <label class="wf-label" for="form-code">Code</label>
+            <input type="text" id="form-code" class="wf-input" placeholder="DEST-09" required>
+          </div>
+          <div class="wf-form-group">
+            <label class="wf-label" for="form-name">Destination Title</label>
+            <input type="text" id="form-name" class="wf-input" placeholder="e.g. Swiss Alps Explorer" required>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div class="wf-form-group">
+            <label class="wf-label" for="form-country">Country</label>
+            <input type="text" id="form-country" class="wf-input" placeholder="Switzerland" required>
+          </div>
+          <div class="wf-form-group">
+            <label class="wf-label" for="form-city">City / Region</label>
+            <input type="text" id="form-city" class="wf-input" placeholder="Zermatt">
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:16px;">
+          <div class="wf-form-group">
+            <label class="wf-label" for="form-category">Category</label>
+            <select id="form-category" class="wf-select">
+              <option value="Cultural">Cultural</option>
+              <option value="Adventure">Adventure</option>
+              <option value="Relaxation">Relaxation</option>
+              <option value="Historical">Historical</option>
+              <option value="Urban & Modern">Urban & Modern</option>
+            </select>
+          </div>
+          <div class="wf-form-group">
+            <label class="wf-label" for="form-cost">Est. Cost ($)</label>
+            <input type="number" id="form-cost" class="wf-input" placeholder="1200" min="0" step="10" required>
+          </div>
+          <div class="wf-form-group">
+            <label class="wf-label" for="form-duration">Duration (Days)</label>
+            <input type="number" id="form-duration" class="wf-input" placeholder="4" min="1" required>
+          </div>
+        </div>
+
+        <div class="wf-form-group">
+          <label class="wf-label" for="form-rating">Rating (0.0 - 5.0)</label>
+          <input type="number" id="form-rating" class="wf-input" placeholder="4.8" min="1.0" max="5.0" step="0.1" value="4.8">
+        </div>
+
+        <div class="wf-form-group">
+          <label class="wf-label" for="form-image">Image URL</label>
+          <input type="url" id="form-image" class="wf-input" placeholder="https://images.unsplash.com/...">
+        </div>
+
+        <div class="wf-form-group">
+          <label class="wf-label" for="form-desc">Description</label>
+          <textarea id="form-desc" class="wf-textarea" rows="3" placeholder="Provide a rich summary of this destination..."></textarea>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:28px;">
+          <button type="button" class="wf-btn wf-btn-secondary" onclick="closeModal()">Cancel</button>
+          <button type="submit" class="wf-btn wf-btn-primary" id="btn-save-dest">Save to MySQL</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../js/wayfarer-api.js"></script>
+  <script src="../js/wayfarer-common.js"></script>
+  <script>
+    let allDestinations = [];
+
+    (async () => {
+      await Wayfarer.init('ADMIN');
+      loadDestinations();
+
+      document.getElementById('admin-dest-search').addEventListener('input', () => {
+        renderTable();
+      });
+
+      document.getElementById('dest-form').addEventListener('submit', handleFormSubmit);
+    })();
+
+    async function loadDestinations() {
+      try {
+        allDestinations = await WayfarerAPI.getDestinations();
+        renderTable();
+      } catch (e) {
+        console.error('Error loading destinations:', e);
+      }
+    }
+
+    function renderTable() {
+      const q = document.getElementById('admin-dest-search').value.trim().toLowerCase();
+      const filtered = allDestinations.filter(d =>
+        !q ||
+        d.name.toLowerCase().includes(q) ||
+        d.country.toLowerCase().includes(q) ||
+        (d.city && d.city.toLowerCase().includes(q)) ||
+        d.destinationCode.toLowerCase().includes(q)
+      );
+
+      document.getElementById('table-count-label').textContent = `Showing ${filtered.length} of ${allDestinations.length} destinations`;
+
+      const tbody = document.getElementById('dest-table-body');
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:32px; color:var(--text-muted);">No destinations found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(d => `
+        <tr>
+          <td><code style="font-family:var(--font-mono); font-weight:bold; color:var(--primary-forest);">${d.destinationCode}</code></td>
+          <td><strong>${d.name}</strong></td>
+          <td>${d.location || d.country}</td>
+          <td><span class="wf-badge wf-badge-sage">${d.category || 'Cultural'}</span></td>
+          <td><strong>$${Number(d.estimatedCost).toLocaleString()}</strong></td>
+          <td>${d.durationDays || 1} Days</td>
+          <td><span style="color:var(--accent-amber); font-weight:bold;">${d.rating ? d.rating.toFixed(1) + ' ★' : 'N/A'}</span></td>
+          <td style="text-align:right;">
+            <button class="wf-btn wf-btn-secondary wf-btn-sm" onclick="openEditModal(${d.id})">Edit</button>
+            <button class="wf-btn wf-btn-danger wf-btn-sm" onclick="deleteDestination(${d.id})">Delete</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openCreateModal() {
+      document.getElementById('modal-heading').textContent = 'Add New Destination';
+      document.getElementById('dest-form').reset();
+      document.getElementById('form-dest-id').value = '';
+      document.getElementById('form-code').disabled = false;
+      document.getElementById('dest-modal').style.display = 'flex';
+    }
+
+    function openEditModal(id) {
+      const d = allDestinations.find(x => x.id === id);
+      if (!d) return;
+
+      document.getElementById('modal-heading').textContent = 'Edit Destination';
+      document.getElementById('form-dest-id').value = d.id;
+      document.getElementById('form-code').value = d.destinationCode;
+      document.getElementById('form-code').disabled = true;
+      document.getElementById('form-name').value = d.name;
+      document.getElementById('form-country').value = d.country;
+      document.getElementById('form-city').value = d.city || '';
+      document.getElementById('form-category').value = d.category || 'Cultural';
+      document.getElementById('form-cost').value = d.estimatedCost;
+      document.getElementById('form-duration').value = d.durationDays || 1;
+      document.getElementById('form-rating').value = d.rating || 4.8;
+      document.getElementById('form-image').value = d.imageUrl || '';
+      document.getElementById('form-desc').value = d.description || '';
+
+      document.getElementById('dest-modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('dest-modal').style.display = 'none';
+    }
+
+    async function handleFormSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById('form-dest-id').value;
+      const isEdit = !!id;
+
+      const payload = {
+        destinationCode: document.getElementById('form-code').value.trim(),
+        name: document.getElementById('form-name').value.trim(),
+        country: document.getElementById('form-country').value.trim(),
+        city: document.getElementById('form-city').value.trim(),
+        category: document.getElementById('form-category').value,
+        estimatedCost: parseFloat(document.getElementById('form-cost').value) || 0,
+        durationDays: parseInt(document.getElementById('form-duration').value) || 1,
+        rating: parseFloat(document.getElementById('form-rating').value) || 4.8,
+        imageUrl: document.getElementById('form-image').value.trim(),
+        description: document.getElementById('form-desc').value.trim()
+      };
+
+      try {
+        let res;
+        if (isEdit) {
+          payload.id = parseInt(id);
+          res = await WayfarerAPI.updateDestination(payload);
+        } else {
+          res = await WayfarerAPI.createDestination(payload);
+        }
+
+        if (res.success) {
+          Wayfarer.showToast(`Destination ${isEdit ? 'updated' : 'created'} successfully!`);
+          closeModal();
+          loadDestinations();
+        } else {
+          Wayfarer.showToast(res.error || "Operation failed.", true);
+        }
+      } catch (err) {
+        Wayfarer.showToast("Error: " + err.message, true);
+      }
+    }
+
+    async function deleteDestination(id) {
+      if (!confirm("Are you sure you want to delete this destination? Any associated transit edges and stops will also be removed.")) return;
+
+      try {
+        const res = await WayfarerAPI.deleteDestination(id);
+        if (res.success) {
+          Wayfarer.showToast("Destination deleted.");
+          loadDestinations();
+        } else {
+          Wayfarer.showToast(res.error || "Delete failed.", true);
+        }
+      } catch (err) {
+        Wayfarer.showToast("Error deleting destination: " + err.message, true);
+      }
+    }
+  </script>
+</body>
+</html>

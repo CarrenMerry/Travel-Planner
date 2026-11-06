@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Traveler Dashboard — Wayfarer</title>
+  <link rel="stylesheet" href="css/wayfarer-clean.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300A6B2'><path d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z'/></svg>">
+</head>
+<body>
+  <header class="navbar" id="mainNav"></header>
+
+  <main class="main-wrapper">
+    <!-- Header Greeting & Quick Actions -->
+    <div class="page-header-row">
+      <div>
+        <h1 class="page-title title-serif" id="userGreeting">Welcome back, Traveler</h1>
+        <p class="page-subtitle" style="margin-bottom: 0;">Here is an overview of your planned trips and travel tools</p>
+      </div>
+      <div class="btn-group">
+        <button id="openNewTripBtn" class="btn btn-primary">+ Create Itinerary</button>
+        <a href="route-planner.html" class="btn btn-secondary">Find Route (BFS)</a>
+        <a href="profile.html" class="btn btn-secondary" title="View Profile & Settings">Profile & Settings</a>
+      </div>
+    </div>
+
+    <!-- Quick Stat Cards -->
+    <div class="grid-3" style="margin-bottom: 2.5rem;">
+      <div class="card">
+        <div style="font-size: 0.85rem; color: var(--color-text-muted); font-weight: 600; text-transform: uppercase;">
+          Saved Itineraries
+        </div>
+        <div id="statTripCount" style="font-size: 2.2rem; font-weight: 700; color: var(--color-primary); margin: 0.35rem 0;">
+          0
+        </div>
+        <a href="itineraries.html" style="font-size: 0.85rem; color: var(--color-accent); font-weight: 600;">
+          View all trips →
+        </a>
+      </div>
+
+      <div class="card">
+        <div style="font-size: 0.85rem; color: var(--color-text-muted); font-weight: 600; text-transform: uppercase;">
+          Total Planned Stops
+        </div>
+        <div id="statStopCount" style="font-size: 2.2rem; font-weight: 700; color: var(--color-primary); margin: 0.35rem 0;">
+          0
+        </div>
+        <div style="font-size: 0.85rem; color: var(--color-text-muted);">
+          Ordered via Custom Linked List
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="font-size: 0.85rem; color: var(--color-text-muted); font-weight: 600; text-transform: uppercase;">
+          Catalog Destinations
+        </div>
+        <div id="statDestCount" style="font-size: 2.2rem; font-weight: 700; color: var(--color-primary); margin: 0.35rem 0;">
+          ...
+        </div>
+        <a href="explore.html" style="font-size: 0.85rem; color: var(--color-accent); font-weight: 600;">
+          Explore catalogue →
+        </a>
+      </div>
+    </div>
+
+    <!-- Recent Itineraries Section -->
+    <section style="margin-bottom: 3rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h2 class="title-serif" style="font-size: 1.5rem; color: var(--color-primary);">My Recent Itineraries</h2>
+        <a href="itineraries.html" class="btn btn-secondary btn-sm">All Itineraries →</a>
+      </div>
+
+      <div id="recentItinerariesList">
+        <div class="card" style="text-align: center; color: var(--color-text-muted); padding: 2rem;">
+          Loading your travel itineraries...
+        </div>
+      </div>
+    </section>
+
+    <!-- Available Destinations Section -->
+    <section>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h2 class="title-serif" style="font-size: 1.5rem; color: var(--color-primary);">Discover Destinations</h2>
+        <a href="explore.html" class="btn btn-secondary btn-sm">Search Catalog →</a>
+      </div>
+
+      <div class="grid-3" id="explorePreviewGrid">
+        <div style="grid-column: 1 / -1; text-align: center; color: var(--color-text-muted); padding: 2rem;">
+          Loading destinations...
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Create Itinerary Modal -->
+  <div class="modal-backdrop" id="newTripModal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title">Create New Itinerary</h3>
+        <button class="btn-close" id="closeTripModalBtn">&times;</button>
+      </div>
+      <form id="createTripForm">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="newTripName">Itinerary Name</label>
+            <input type="text" id="newTripName" class="form-control" placeholder="e.g. Grand Autumn Tour" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="newTripBudget">Target Budget ($ USD)</label>
+            <input type="number" id="newTripBudget" class="form-control" placeholder="2500" min="0" step="50" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelTripModalBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="confirmCreateTripBtn">Create & Open Planner</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer class="footer"></footer>
+
+  <script src="js/wayfarer-api.js"></script>
+  <script src="js/wayfarer-ui.js"></script>
+  <script>
+    let currentUser = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      currentUser = await WayfarerUI.requireLogin();
+      if (!currentUser) return;
+
+      await WayfarerUI.initNavbar('dashboard');
+      WayfarerUI.initFooter();
+
+      document.getElementById('userGreeting').textContent = `Welcome back, ${currentUser.name || 'Traveler'}`;
+
+      loadDashboardData();
+      initModal();
+    });
+
+    async function loadDashboardData() {
+      try {
+        const [itineraries, destinations] = await Promise.all([
+          WayfarerAPI.getUserItineraries(),
+          WayfarerAPI.getDestinations()
+        ]);
+
+        const list = Array.isArray(itineraries) ? itineraries : [];
+        const dests = Array.isArray(destinations) ? destinations : [];
+
+        // Update stats
+        document.getElementById('statTripCount').textContent = list.length;
+        document.getElementById('statDestCount').textContent = dests.length;
+
+        let totalStops = 0;
+        list.forEach(it => {
+          totalStops += (it.stops ? it.stops.length : (it.stopCount || 0));
+        });
+        document.getElementById('statStopCount').textContent = totalStops;
+
+        // Render Recent Itineraries
+        const recentContainer = document.getElementById('recentItinerariesList');
+        if (list.length === 0) {
+          recentContainer.innerHTML = `
+            <div class="empty-state">
+              <div class="empty-state-title">No itineraries created yet</div>
+              <p class="empty-state-desc">Start organizing your dream voyage with sequential stops and budget planning.</p>
+              <button class="btn btn-primary" onclick="document.getElementById('openNewTripBtn').click()">+ Create Your First Itinerary</button>
+            </div>
+          `;
+        } else {
+          recentContainer.innerHTML = `
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Trip Name</th>
+                    <th>Stops</th>
+                    <th>Duration</th>
+                    <th>Budget</th>
+                    <th>Estimated Cost</th>
+                    <th>Status</th>
+                    <th style="text-align: right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${list.slice(0, 5).map(it => {
+                    const count = it.stops ? it.stops.length : 0;
+                    return `
+                      <tr>
+                        <td style="font-weight: 600; color: var(--color-primary);">
+                          ${WayfarerUI.escape(it.name || 'Untitled Trip')}
+                        </td>
+                        <td>
+                          <span class="badge badge-primary">${count} stop${count === 1 ? '' : 's'}</span>
+                        </td>
+                        <td>${it.totalDurationDays || 0} days</td>
+                        <td>${WayfarerUI.formatMoney(it.budget)}</td>
+                        <td style="font-weight: 600;">${WayfarerUI.formatMoney(it.totalEstimatedCost)}</td>
+                        <td>
+                          <span class="badge ${it.status === 'CONFIRMED' ? 'badge-success' : 'badge-neutral'}">
+                            ${it.status || 'DRAFT'}
+                          </span>
+                        </td>
+                        <td style="text-align: right;">
+                          <a href="itinerary-builder.html?id=${it.id}" class="btn btn-secondary btn-sm">Open Builder →</a>
+                        </td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+          `;
+        }
+
+        // Render Destination Previews
+        const previewContainer = document.getElementById('explorePreviewGrid');
+        if (dests.length === 0) {
+          previewContainer.innerHTML = '<div style="grid-column: 1 / -1;" class="text-muted">No destinations available.</div>';
+        } else {
+          previewContainer.innerHTML = dests.slice(0, 3).map(d => `
+            <div class="card card-hover" style="display: flex; flex-direction: column; overflow: hidden; padding: 0;">
+              ${d.imageUrl ? `
+                <img src="${WayfarerUI.escape(d.imageUrl)}" alt="${WayfarerUI.escape(d.name)}" style="height: 160px; width: 100%; object-fit: cover;">
+              ` : `
+                <div style="height: 160px; background: var(--bg-card-subtle); display: flex; align-items: center; justify-content: center; font-size: 2.5rem;">✈️</div>
+              `}
+              <div style="padding: 1.25rem; flex: 1; display: flex; flex-direction: column;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
+                  <span class="badge badge-primary">${WayfarerUI.escape(d.category || 'General')}</span>
+                  <span style="font-weight: 600; color: var(--color-accent); font-size: 0.9rem;">★ ${d.rating || '4.8'}</span>
+                </div>
+                <h4 style="font-size: 1.1rem; color: var(--color-primary); margin-bottom: 0.2rem;">${WayfarerUI.escape(d.name)}</h4>
+                <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 0.75rem;">${WayfarerUI.escape(d.country)}</p>
+                <div style="margin-top: auto; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--color-border); padding-top: 0.75rem;">
+                  <span style="font-weight: 700; color: var(--color-primary);">${WayfarerUI.formatMoney(d.estimatedCost)}</span>
+                  <a href="explore.html" class="btn btn-secondary btn-sm">Explore Details</a>
+                </div>
+              </div>
+            </div>
+          `).join('');
+        }
+      } catch (err) {
+        console.error('Dashboard load error:', err);
+      }
+    }
+
+    function initModal() {
+      const modal = document.getElementById('newTripModal');
+      const openBtn = document.getElementById('openNewTripBtn');
+      const closeBtn = document.getElementById('closeTripModalBtn');
+      const cancelBtn = document.getElementById('cancelTripModalBtn');
+      const form = document.getElementById('createTripForm');
+
+      const openModal = () => modal.classList.add('active');
+      const closeModal = () => modal.classList.remove('active');
+
+      openBtn.addEventListener('click', openModal);
+      closeBtn.addEventListener('click', closeModal);
+      cancelBtn.addEventListener('click', closeModal);
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('newTripName').value.trim();
+        const budget = parseFloat(document.getElementById('newTripBudget').value) || 0;
+        const submitBtn = document.getElementById('confirmCreateTripBtn');
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Creating...';
+
+        try {
+          const res = await WayfarerAPI.createItinerary(name, budget);
+          if (res && res.id) {
+            window.location.href = `itinerary-builder.html?id=${res.id}`;
+          } else {
+            alert('Failed to create itinerary. Please try again.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Create & Open Planner';
+          }
+        } catch (err) {
+          alert('Error creating trip: ' + err.message);
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Create & Open Planner';
+        }
+      });
+    }
+  </script>
+</body>
+</html>

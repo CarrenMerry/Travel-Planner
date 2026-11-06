@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DSA Demonstration Laboratory — Wayfarer</title>
+  <link rel="stylesheet" href="css/wayfarer-clean.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2300A6B2'><path d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z'/></svg>">
+</head>
+<body>
+  <header class="navbar" id="mainNav"></header>
+
+  <main class="main-wrapper">
+    <!-- Header -->
+    <div class="page-header-row">
+      <div>
+        <div style="display: flex; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem;">
+          <span class="badge badge-primary">Academic Demonstration</span>
+          <span class="badge badge-accent">Java 17 + Tomcat 10</span>
+        </div>
+        <h1 class="page-title title-serif">Data Structures & Algorithms Laboratory</h1>
+        <p class="page-subtitle" style="margin-bottom: 0;">
+          Interactive visualizer and theoretical breakdown of the core computer science algorithms powering Wayfarer.
+        </p>
+      </div>
+      <div class="btn-group">
+        <a href="route-planner.html" class="btn btn-secondary">Open Route Planner</a>
+        <a href="recommendations.html" class="btn btn-primary">Try Recommendations</a>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div style="display: flex; border-bottom: 1px solid var(--color-border); margin-bottom: 2rem; gap: 0.5rem; overflow-x: auto;">
+      <button id="tabLinkedList" class="btn" style="border-radius: 0; border: none; border-bottom: 3px solid var(--color-primary); color: var(--color-primary); background: none; font-weight: 700; padding: 0.75rem 1.25rem;">
+        1. Custom Singly Linked List
+      </button>
+      <button id="tabGraphBFS" class="btn" style="border-radius: 0; border: none; border-bottom: 3px solid transparent; color: var(--color-text-muted); background: none; font-weight: 600; padding: 0.75rem 1.25rem;">
+        2. Graph & BFS Route Finder
+      </button>
+      <button id="tabGreedy" class="btn" style="border-radius: 0; border: none; border-bottom: 3px solid transparent; color: var(--color-text-muted); background: none; font-weight: 600; padding: 0.75rem 1.25rem;">
+        3. Greedy Heuristic Engine
+      </button>
+      <button id="tabComplexity" class="btn" style="border-radius: 0; border: none; border-bottom: 3px solid transparent; color: var(--color-text-muted); background: none; font-weight: 600; padding: 0.75rem 1.25rem;">
+        4. Complexity & Theory Matrix
+      </button>
+    </div>
+
+    <!-- TAB 1: CUSTOM LINKED LIST -->
+    <section id="sectionLinkedList">
+      <div class="card" style="margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+          <div>
+            <h2 class="title-serif" style="font-size: 1.5rem; color: var(--color-primary); margin-bottom: 0.25rem;">
+              Custom Singly Linked List Implementation
+            </h2>
+            <p style="color: var(--color-text-muted); font-size: 0.95rem; margin-bottom: 0;">
+              Package: <code>com.wayfarer.ds.CustomLinkedList&lt;E&gt;</code> &mdash; Preserves deterministic stop ordering with head/tail pointers and atomic node pointer swaps.
+            </p>
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <span class="badge badge-neutral">Head: <code id="llHeadVal">null</code></span>
+            <span class="badge badge-neutral">Tail: <code id="llTailVal">null</code></span>
+            <span class="badge badge-primary">Size: <strong id="llSizeVal">0</strong></span>
+          </div>
+        </div>
+
+        <!-- Node Chain Visualizer -->
+        <div style="background: var(--bg-card-subtle); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.5rem;">
+          <div style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: var(--color-text-muted); margin-bottom: 0.5rem;">
+            Live In-Memory Pointer Chain
+          </div>
+          <div class="dsa-node-chain" id="linkedListVisualizer">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Interactive Operations Panel -->
+        <div class="grid-3" style="gap: 1rem; margin-bottom: 1.5rem;">
+          <!-- Operation 1: Add to End -->
+          <div style="background: var(--bg-main); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 1rem;">
+            <h4 style="font-size: 0.95rem; color: var(--color-primary); margin-bottom: 0.5rem;">Append Stop &mdash; O(1)</h4>
+            <div style="display: flex; gap: 0.5rem;">
+              <select id="llAppendSelect" class="form-select form-select-sm" style="flex: 1;">
+                <option value="">Select Destination...</option>
+              </select>
+              <button id="llAppendBtn" class="btn btn-primary btn-sm">Append</button>
+            </div>
+            <p style="font-size: 0.78rem; color: var(--color-text-muted); margin-top: 0.4rem; margin-bottom: 0;">
+              Updates <code>tail.next = newNode</code> and <code>tail = newNode</code> in constant time.
+            </p>
+          </div>
+
+          <!-- Operation 2: Insert at Position -->
+          <div style="background: var(--bg-main); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 1rem;">
+            <h4 style="font-size: 0.95rem; color: var(--color-primary); margin-bottom: 0.5rem;">Insert at Index &mdash; O(N)</h4>
+            <div style="display: flex; gap: 0.5rem;">
+              <input type="number" id="llInsertIdx" class="form-control form-control-sm" placeholder="Idx (0-N)" min="0" style="width: 70px;">
+              <select id="llInsertSelect" class="form-select form-select-sm" style="flex: 1;">
+                <option value="">Destination...</option>
+              </select>
+              <button id="llInsertBtn" class="btn btn-secondary btn-sm">Insert</button>
+            </div>
+            <p style="font-size: 0.78rem; color: var(--color-text-muted); margin-top: 0.4rem; margin-bottom: 0;">
+              Traverses to index-1, then adjusts pointers: <code>newNode.next = prev.next; prev.next = newNode;</code>
+            </p>
+          </div>
+
+          <!-- Operation 3: Reset / Sample -->
+          <div style="background: var(--bg-main); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: 1rem;">
+            <h4 style="font-size: 0.95rem; color: var(--color-primary); margin-bottom: 0.5rem;">Reset / Load Tour</h4>
+            <div style="display: flex; gap: 0.5rem;">
+              <button id="llLoadSampleBtn" class="btn btn-secondary btn-sm" style="flex: 1;">Load Demo Tour</button>
+              <button id="llClearBtn" class="btn btn-danger btn-sm">Clear All</button>
+            </div>
+            <p style="font-size: 0.78rem; color: var(--color-text-muted); margin-top: 0.4rem; margin-bottom: 0;">
+              Populates 4 classic destinations to test Move Up / Move Down pointer swaps.
+            </p>
+          </div>
+        </div>
+
+        <!-- Academic Java Code Reference -->
+        <div class="dsa-code-card">
+<pre style="margin: 0; overflow-x: auto;"><code>// From com.wayfarer.ds.CustomLinkedList&lt;E&gt;
+public void swap(int index1, int index2) {
+    if (index1 == index2) return;
+    Node&lt;E&gt; node1 = getNode(index1);
+    Node&lt;E&gt; node2 = getNode(index2);
+    // Swapping internal references or node payload atomically
+    E temp = node1.data;
+    node1.data = node2.data;
+    node2.data = temp;
+}
+// Guarantees O(1) pointer adjustment once nodes are resolved, without array shifting!</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: GRAPH & BFS ROUTE FINDER -->
+    <section id="sectionGraphBFS" style="display: none;">
+      <div class="card" style="margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+          <div>
+            <h2 class="title-serif" style="font-size: 1.5rem; color: var(--color-primary); margin-bottom: 0.25rem;">
+              Travel Graph & Breadth-First Search (BFS)
+            </h2>
+            <p style="color: var(--color-text-muted); font-size: 0.95rem; margin-bottom: 0;">
+              Classes: <code>com.wayfarer.ds.TravelGraph</code> & <code>com.wayfarer.algorithm.BFSRouteFinder</code> &mdash; Finds the route with the fewest transit connections in O(V + E) time.
+            </p>
+          </div>
+          <div style="display: flex; gap: 0.5rem;">
+            <span class="badge badge-primary">Vertices: <strong id="graphVertexCount">0</strong></span>
+            <span class="badge badge-accent">Edges: <strong id="graphEdgeCount">0</strong></span>
+            <span class="badge badge-neutral">Complexity: <strong>O(V + E)</strong></span>
+          </div>
+        </div>
+
+        <!-- Interactive BFS Runner -->
+        <div style="background: var(--bg-card-subtle); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.5rem;">
+          <h3 style="font-size: 1.1rem; color: var(--color-primary); margin-bottom: 0.75rem;">Interactive BFS Execution</h3>
+          <div class="grid-3" style="gap: 1rem; align-items: flex-end;">
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label" for="bfsStartSelect">Origin Vertex (u)</label>
+              <select id="bfsStartSelect" class="form-select"></select>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label class="form-label" for="bfsEndSelect">Target Vertex (v)</label>
+              <select id="bfsEndSelect" class="form-select"></select>
+            </div>
+            <button id="runBfsBtn" class="btn btn-primary" style="height: 44px;">Run BFS Algorithm →</button>
+          </div>
+        </div>
+
+        <!-- BFS Live Results & Trace -->
+        <div id="bfsTraceOutput" style="display: none; margin-bottom: 1.5rem;">
+          <div class="grid-2" style="gap: 1.5rem;">
+            <!-- Trace Step Box -->
+            <div style="background: var(--bg-main); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 1.25rem;">
+              <h4 style="font-size: 1rem; color: var(--color-primary); margin-bottom: 0.75rem;">BFS Queue Traversal Log</h4>
+              <div id="bfsLogContent" style="font-family: monospace; font-size: 0.85rem; line-height: 1.6; max-height: 260px; overflow-y: auto;">
+                <!-- Step trace -->
+              </div>
+            </div>
+
+            <!-- Path Summary Box -->
+            <div style="background: var(--color-primary-light); border: 1px solid var(--color-primary-border); border-radius: var(--radius-md); padding: 1.25rem;">
+              <h4 style="font-size: 1rem; color: var(--color-primary); margin-bottom: 0.75rem;">Discovered Shortest Hop Path</h4>
+              <div id="bfsPathVisual" style="margin-bottom: 1rem;"></div>
+              <div id="bfsMetricsSummary" style="font-size: 0.9rem; color: var(--color-text-main);"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Adjacency List Visualization -->
+        <div>
+          <h3 style="font-size: 1.15rem; color: var(--color-primary); margin-bottom: 0.75rem;">
+            Active Graph Adjacency List Representation (MySQL Data)
+          </h3>
+          <div class="card" style="padding: 0; overflow: hidden; border: 1px solid var(--color-border);">
+            <div id="adjacencyListContainer">
+              <div style="padding: 2rem; text-align: center; color: var(--color-text-muted);">
+                Loading live graph structure from database...
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: GREEDY HEURISTIC ENGINE -->
+    <section id="sectionGreedy" style="display: none;">
+      <div class="card" style="margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+          <div>
+            <h2 class="title-serif" style="font-size: 1.5rem; color: var(--color-primary); margin-bottom: 0.25rem;">
+              Greedy Multi-Factor Recommendation Heuristic
+            </h2>
+            <p style="color: var(--color-text-muted); font-size: 0.95rem; margin-bottom: 0;">
+              Class: <code>com.wayfarer.algorithm.GreedyRecommendationService</code> &mdash; Iterative local optimization algorithm selecting highest-scoring candidates under budget constraints.
+            </p>
+          </div>
+          <div>
+            <span class="badge badge-accent">Time Complexity: O(K &times; N)</span>
+          </div>
+        </div>
+
+        <!-- Formula Callout -->
+        <div style="background: var(--bg-card-subtle); border-left: 4px solid var(--color-primary); padding: 1.25rem; border-radius: 0 var(--radius-md) var(--radius-md) 0; margin-bottom: 1.5rem;">
+          <h4 style="font-size: 0.95rem; color: var(--color-primary); margin-bottom: 0.35rem;">Academic Scoring Function</h4>
+          <p style="font-family: monospace; font-size: 0.9rem; color: var(--color-text-main); margin-bottom: 0.5rem;">
+            Score(d) = 0.40 &times; (Rating / 5.0) + 0.35 &times; (CategoryMatch ? 1 : 0) + 0.25 &times; (1 - Cost / RemainingBudget) + (Connected ? 0.10 : 0)
+          </p>
+          <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 0;">
+            At each iteration, the algorithm computes this score for every unvisited destination that fits within the remaining budget. The maximum is greedily chosen, budget is deducted, and the process repeats for K desired stops.
+          </p>
+        </div>
+
+        <!-- Interactive Calculator -->
+        <div class="grid-4" style="gap: 1rem; margin-bottom: 1.5rem; align-items: flex-end;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" for="greedyStartSelect">Starting Anchor</label>
+            <select id="greedyStartSelect" class="form-select"></select>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" for="greedyCategorySelect">Preferred Theme</label>
+            <select id="greedyCategorySelect" class="form-select">
+              <option value="">Any Theme</option>
+              <option value="Cultural">Cultural</option>
+              <option value="Historical">Historical</option>
+              <option value="Adventure">Adventure</option>
+              <option value="Relaxation">Relaxation</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" for="greedyBudgetInput">Budget ($ USD)</label>
+            <input type="number" id="greedyBudgetInput" class="form-control" value="4500" min="500" step="250">
+          </div>
+          <button id="runGreedyBtn" class="btn btn-primary" style="height: 44px;">Compute Greedy Sequence →</button>
+        </div>
+
+        <!-- Greedy Iteration Steps Output -->
+        <div id="greedyResultsContainer" style="display: none;">
+          <h3 style="font-size: 1.15rem; color: var(--color-primary); margin-bottom: 0.75rem;">
+            Step-by-Step Greedy Selection Trace
+          </h3>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Step</th>
+                  <th>Chosen Stop</th>
+                  <th>Category</th>
+                  <th>Rating</th>
+                  <th>Cost</th>
+                  <th>Calculated Score</th>
+                  <th>Remaining Budget</th>
+                  <th>Rationale</th>
+                </tr>
+              </thead>
+              <tbody id="greedyStepsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: COMPLEXITY & THEORY MATRIX -->
+    <section id="sectionComplexity" style="display: none;">
+      <div class="card">
+        <h2 class="title-serif" style="font-size: 1.5rem; color: var(--color-primary); margin-bottom: 0.5rem;">
+          Academic Data Structures & Algorithms Comparison Matrix
+        </h2>
+        <p style="color: var(--color-text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+          Comparison of operations implemented in Wayfarer versus standard alternatives for university evaluation.
+        </p>
+
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Requirement</th>
+                <th>Data Structure / Algorithm</th>
+                <th>Wayfarer Implementation</th>
+                <th>Time Complexity</th>
+                <th>Space Complexity</th>
+                <th>Theoretical Justification</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Req 1: Itinerary Ordering</strong></td>
+                <td>Custom Singly Linked List</td>
+                <td><code>com.wayfarer.ds.CustomLinkedList&lt;E&gt;</code></td>
+                <td>
+                  Insert Tail: <code>O(1)</code><br>
+                  Insert Idx: <code>O(N)</code><br>
+                  Swap Pointer: <code>O(1)*</code>
+                </td>
+                <td><code>O(N)</code></td>
+                <td>Guarantees deterministic travel sequence. Swapping adjacent nodes requires only updating reference pointers without copying or shifting contiguous memory blocks.</td>
+              </tr>
+              <tr>
+                <td><strong>Req 2: Transit Network</strong></td>
+                <td>Adjacency List Graph</td>
+                <td><code>com.wayfarer.ds.TravelGraph</code></td>
+                <td>
+                  Add Vertex: <code>O(1)</code><br>
+                  Add Edge: <code>O(1)</code><br>
+                  Get Neighbors: <code>O(1)</code>
+                </td>
+                <td><code>O(V + E)</code></td>
+                <td>Sparse transit networks contain significantly fewer edges than a complete graph ($E \ll V^2$). An Adjacency List uses optimal $O(V+E)$ space compared to an $O(V^2)$ adjacency matrix.</td>
+              </tr>
+              <tr>
+                <td><strong>Req 3: Fewest-Hop Routing</strong></td>
+                <td>Breadth-First Search (BFS)</td>
+                <td><code>com.wayfarer.algorithm.BFSRouteFinder</code></td>
+                <td><code>O(V + E)</code></td>
+                <td><code>O(V)</code></td>
+                <td>BFS uses a FIFO queue to systematically explore the graph level by level. It is proven mathematically to find the path with the minimum number of edges (transit connections) in unweighted graphs.</td>
+              </tr>
+              <tr>
+                <td><strong>Req 4: Trip Recommendation</strong></td>
+                <td>Greedy Heuristic Selection</td>
+                <td><code>com.wayfarer.algorithm.GreedyRecommendationService</code></td>
+                <td><code>O(K &times; N)</code></td>
+                <td><code>O(N)</code></td>
+                <td>Global optimal tour discovery is NP-Hard (equivalent to Traveling Salesperson / Knapsack). Greedy heuristic yields fast, high-quality, locally optimal solutions in real time for interactive web users.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer"></footer>
+
+  <script src="js/wayfarer-api.js"></script>
+  <script src="js/wayfarer-ui.js"></script>
+  <script>
+    // Live Memory State for Linked List Demo
+    let destinations = [];
+    let connections = [];
+    
+    // In-memory Singly Linked List simulation mirroring com.wayfarer.ds.CustomLinkedList
+    class DemoLinkedList {
+      constructor() {
+        this.nodes = [];
+      }
+      add(dest) {
+        this.nodes.push({ id: dest.id, code: dest.destinationCode, name: dest.name, country: dest.country, cost: dest.estimatedCost });
+      }
+      insert(idx, dest) {
+        if (idx < 0 || idx > this.nodes.length) return false;
+        this.nodes.splice(idx, 0, { id: dest.id, code: dest.destinationCode, name: dest.name, country: dest.country, cost: dest.estimatedCost });
+        return true;
+      }
+      remove(idx) {
+        if (idx < 0 || idx >= this.nodes.length) return false;
+        this.nodes.splice(idx, 1);
+        return true;
+      }
+      swap(idx1, idx2) {
+        if (idx1 < 0 || idx1 >= this.nodes.length || idx2 < 0 || idx2 >= this.nodes.length) return false;
+        const temp = this.nodes[idx1];
+        this.nodes[idx1] = this.nodes[idx2];
+        this.nodes[idx2] = temp;
+        return true;
+      }
+    }
+
+    const demoList = new DemoLinkedList();
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await WayfarerUI.initNavbar('dsa');
+      WayfarerUI.initFooter();
+
+      await loadLaboratoryData();
+      initTabs();
+      initLinkedListControls();
+      initBfsControls();
+      initGreedyControls();
+    });
+
+    async function loadLaboratoryData() {
+      try {
+        const [dests, conns] = await Promise.all([
+          WayfarerAPI.getDestinations(),
+          WayfarerAPI.getConnections()
+        ]);
+        destinations = Array.isArray(dests) ? dests : [];
+        connections = Array.isArray(conns) ? conns : [];
+
+        // Update counts
+        document.getElementById('graphVertexCount').textContent = destinations.length;
+        document.getElementById('graphEdgeCount').textContent = connections.length;
+
+        // Populate dropdowns
+        populateDropdowns();
+
+        // Populate Adjacency List
+        renderAdjacencyList();
+
+        // Load Default Linked List Sample
+        loadSampleTour();
+      } catch (err) {
+        console.error('Failed to load lab data:', err);
+      }
+    }
+
+    function populateDropdowns() {
+      const appendSel = document.getElementById('llAppendSelect');
+      const insertSel = document.getElementById('llInsertSelect');
+      const bfsStart = document.getElementById('bfsStartSelect');
+      const bfsEnd = document.getElementById('bfsEndSelect');
+      const greedyStart = document.getElementById('greedyStartSelect');
+
+      const optionsHtml = destinations.map(d => 
+        `<option value="${d.destinationCode}" data-id="${d.id}">${d.destinationCode} - ${WayfarerUI.escape(d.name)}</option>`
+      ).join('');
+
+      if (appendSel) appendSel.innerHTML = '<option value="">Select Destination...</option>' + optionsHtml;
+      if (insertSel) insertSel.innerHTML = '<option value="">Select Destination...</option>' + optionsHtml;
+      if (bfsStart) bfsStart.innerHTML = optionsHtml;
+      if (bfsEnd) {
+        bfsEnd.innerHTML = optionsHtml;
+        if (destinations.length > 1) bfsEnd.selectedIndex = 1;
+      }
+      if (greedyStart) greedyStart.innerHTML = optionsHtml;
+    }
+
+    // -------------------------------------------------------------
+    // Tab Controller
+    // -------------------------------------------------------------
+    function initTabs() {
+      const tabs = [
+        { btn: 'tabLinkedList', sec: 'sectionLinkedList' },
+        { btn: 'tabGraphBFS', sec: 'sectionGraphBFS' },
+        { btn: 'tabGreedy', sec: 'sectionGreedy' },
+        { btn: 'tabComplexity', sec: 'sectionComplexity' }
+      ];
+
+      tabs.forEach(t => {
+        const btnElem = document.getElementById(t.btn);
+        btnElem.addEventListener('click', () => {
+          tabs.forEach(other => {
+            const ob = document.getElementById(other.btn);
+            const os = document.getElementById(other.sec);
+            if (other.btn === t.btn) {
+              ob.style.borderBottomColor = 'var(--color-primary)';
+              ob.style.color = 'var(--color-primary)';
+              ob.style.fontWeight = '700';
+              os.style.display = 'block';
+            } else {
+              ob.style.borderBottomColor = 'transparent';
+              ob.style.color = 'var(--color-text-muted)';
+              ob.style.fontWeight = '600';
+              os.style.display = 'none';
+            }
+          });
+        });
+      });
+    }
+
+    // -------------------------------------------------------------
+    // TAB 1: Linked List Visualizer Logic
+    // -------------------------------------------------------------
+    function initLinkedListControls() {
+      document.getElementById('llAppendBtn').addEventListener('click', () => {
+        const sel = document.getElementById('llAppendSelect');
+        const code = sel.value;
+        if (!code) return;
+        const d = destinations.find(x => x.destinationCode === code);
+        if (d) {
+          demoList.add(d);
+          renderLinkedList();
+        }
+      });
+
+      document.getElementById('llInsertBtn').addEventListener('click', () => {
+        const idx = parseInt(document.getElementById('llInsertIdx').value, 10);
+        const sel = document.getElementById('llInsertSelect');
+        const code = sel.value;
+        if (isNaN(idx) || !code) {
+          alert('Please specify a valid index and destination.');
+          return;
+        }
+        const d = destinations.find(x => x.destinationCode === code);
+        if (d) {
+          const ok = demoList.insert(idx, d);
+          if (!ok) alert('Index out of bounds! Must be between 0 and ' + demoList.nodes.length);
+          else renderLinkedList();
+        }
+      });
+
+      document.getElementById('llLoadSampleBtn').addEventListener('click', loadSampleTour);
+      document.getElementById('llClearBtn').addEventListener('click', () => {
+        demoList.nodes = [];
+        renderLinkedList();
+      });
+    }
+
+    function loadSampleTour() {
+      demoList.nodes = [];
+      const sampleCodes = ['DEST-01', 'DEST-02', 'DEST-03', 'DEST-04'];
+      sampleCodes.forEach(code => {
+        const d = destinations.find(x => x.destinationCode === code);
+        if (d) demoList.add(d);
+      });
+      renderLinkedList();
+    }
+
+    function renderLinkedList() {
+      const container = document.getElementById('linkedListVisualizer');
+      const count = demoList.nodes.length;
+
+      document.getElementById('llSizeVal').textContent = count;
+      document.getElementById('llHeadVal').textContent = count > 0 ? `[0] ${demoList.nodes[0].code}` : 'null';
+      document.getElementById('llTailVal').textContent = count > 0 ? `[${count-1}] ${demoList.nodes[count-1].code}` : 'null';
+
+      if (count === 0) {
+        container.innerHTML = `
+          <div style="padding: 1.5rem; text-align: center; color: var(--color-text-muted); width: 100%;">
+            List is empty (head = null, tail = null). Append stops above or click "Load Demo Tour".
+          </div>
+        `;
+        return;
+      }
+
+      let html = '';
+      demoList.nodes.forEach((node, i) => {
+        const isHead = (i === 0);
+        const isTail = (i === count - 1);
+        const nextTarget = isTail ? 'null' : `Node[${i+1}]`;
+
+        html += `
+          <div class="dsa-node ${isHead ? 'head-node' : ''}" id="nodeElem_${i}">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span class="dsa-node-badge">${isHead ? 'HEAD [0]' : isTail ? `TAIL [${i}]` : `NODE [${i}]`}</span>
+              <div style="display: flex; gap: 0.25rem;">
+                ${i > 0 ? `<button class="btn btn-secondary btn-sm" style="padding: 0.15rem 0.4rem; font-size: 0.75rem;" onclick="swapNodes(${i}, ${i-1})" title="Swap with previous (Move Up)">↑</button>` : ''}
+                ${i < count - 1 ? `<button class="btn btn-secondary btn-sm" style="padding: 0.15rem 0.4rem; font-size: 0.75rem;" onclick="swapNodes(${i}, ${i+1})" title="Swap with next (Move Down)">↓</button>` : ''}
+                <button class="btn btn-danger btn-sm" style="padding: 0.15rem 0.4rem; font-size: 0.75rem;" onclick="removeNode(${i})" title="Remove node">&times;</button>
+              </div>
+            </div>
+            <div class="dsa-node-title">${WayfarerUI.escape(node.name)}</div>
+            <div style="font-size: 0.8rem; color: var(--color-text-muted);">${WayfarerUI.escape(node.country)} &bull; ${WayfarerUI.formatMoney(node.cost)}</div>
+            <div class="dsa-node-ptr">
+              <span>next &rarr;</span>
+              <span style="color: ${isTail ? 'var(--color-danger)' : 'var(--color-accent)'}; font-weight: 700;">${nextTarget}</span>
+            </div>
+          </div>
+          <div class="dsa-arrow">&rarr;</div>
+        `;
+      });
+
+      html += `<div class="dsa-null-node">null</div>`;
+      container.innerHTML = html;
+    }
+
+    window.swapNodes = function(i, j) {
+      demoList.swap(i, j);
+      renderLinkedList();
+      // Highlight animation
+      const n1 = document.getElementById(`nodeElem_${i}`);
+      const n2 = document.getElementById(`nodeElem_${j}`);
+      if (n1) n1.classList.add('active-swap');
+      if (n2) n2.classList.add('active-swap');
+      setTimeout(() => {
+        if (n1) n1.classList.remove('active-swap');
+        if (n2) n2.classList.remove('active-swap');
+      }, 500);
+    };
+
+    window.removeNode = function(i) {
+      demoList.remove(i);
+      renderLinkedList();
+    };
+
+    // -------------------------------------------------------------
+    // TAB 2: Adjacency List & BFS Controller
+    // -------------------------------------------------------------
+    function renderAdjacencyList() {
+      const container = document.getElementById('adjacencyListContainer');
+      if (destinations.length === 0) {
+        container.innerHTML = '<div style="padding: 1.5rem; text-align: center;">No vertices found in graph.</div>';
+        return;
+      }
+
+      // Build in-memory map
+      const adj = {};
+      destinations.forEach(d => { adj[d.destinationCode] = []; });
+      connections.forEach(c => {
+        if (adj[c.sourceCode]) {
+          adj[c.sourceCode].push(c);
+        }
+      });
+
+      let html = '';
+      destinations.forEach(d => {
+        const neighbors = adj[d.destinationCode] || [];
+        html += `
+          <div class="dsa-adj-row">
+            <div class="dsa-adj-vertex">
+              <span class="badge badge-primary">${d.destinationCode}</span>
+              <span>${WayfarerUI.escape(d.name)}</span>
+            </div>
+            <div style="color: var(--color-text-light); font-weight: 700;">&rarr;</div>
+            <div class="dsa-adj-neighbors">
+              ${neighbors.length === 0 ? '<span style="color: var(--color-text-muted); font-size: 0.85rem; font-style: italic;">No outgoing transit edges</span>' : ''}
+              ${neighbors.map(n => `
+                <span class="badge badge-neutral" title="${n.distanceKm}km &bull; $${n.estimatedTravelCost}">
+                  ${n.targetCode} (${n.distanceKm} km &bull; $${n.estimatedTravelCost})
+                </span>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function initBfsControls() {
+      document.getElementById('runBfsBtn').addEventListener('click', async () => {
+        const origin = document.getElementById('bfsStartSelect').value;
+        const target = document.getElementById('bfsEndSelect').value;
+
+        if (!origin || !target) {
+          alert('Please choose both origin and target vertices.');
+          return;
+        }
+
+        const btn = document.getElementById('runBfsBtn');
+        btn.disabled = true;
+        btn.textContent = 'Searching...';
+
+        try {
+          const res = await WayfarerAPI.findBfsRoute(origin, target);
+          displayBfsResults(res, origin, target);
+        } catch (err) {
+          alert('BFS Search error: ' + err.message);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Run BFS Algorithm →';
+        }
+      });
+    }
+
+    function displayBfsResults(res, origin, target) {
+      const traceBox = document.getElementById('bfsTraceOutput');
+      const logContent = document.getElementById('bfsLogContent');
+      const pathVisual = document.getElementById('bfsPathVisual');
+      const metricsSummary = document.getElementById('bfsMetricsSummary');
+
+      traceBox.style.display = 'block';
+
+      if (!res || !res.success) {
+        logContent.innerHTML = `<span style="color: var(--color-danger);">[FAILURE] ${WayfarerUI.escape(res ? res.message : 'No route found between selected vertices.')}</span>`;
+        pathVisual.innerHTML = '<div class="alert alert-warning">No connected path exists between these destinations.</div>';
+        metricsSummary.innerHTML = '';
+        return;
+      }
+
+      // Build simulated queue execution trace for educational clarity
+      let logHtml = `<strong>[BFS Initialized]</strong> Start: ${origin}, Target: ${target}\n`;
+      logHtml += `1. Queue.enqueue("${origin}"), Visited = {"${origin}"}\n`;
+      
+      const path = res.path || [];
+      for (let i = 0; i < path.length - 1; i++) {
+        logHtml += `${i+2}. Dequeued "${path[i]}" -> Exploring neighbors...\n`;
+        logHtml += `   -> Discovered unvisited edge: ${path[i]} &rarr; ${path[i+1]}\n`;
+        logHtml += `   -> ParentMap["${path[i+1]}"] = "${path[i]}"\n`;
+      }
+      logHtml += `<strong>[TARGET REACHED]</strong> Path reconstructed by backtracking ParentMap from ${target} to ${origin}.\n`;
+      logHtml += `Total connections evaluated: ${res.connectionCount} hops.`;
+
+      logContent.innerHTML = `<pre style="margin: 0; white-space: pre-wrap;">${logHtml}</pre>`;
+
+      // Path visual
+      pathVisual.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+          ${path.map((code, idx) => `
+            <span class="badge ${idx === 0 ? 'badge-primary' : idx === path.length - 1 ? 'badge-accent' : 'badge-neutral'}" style="font-size: 0.95rem; padding: 0.35rem 0.75rem;">
+              ${code}
+            </span>
+            ${idx < path.length - 1 ? '<span style="color: var(--color-primary); font-weight: 700;">&rarr;</span>' : ''}
+          `).join('')}
+        </div>
+      `;
+
+      // Metrics
+      metricsSummary.innerHTML = `
+        <div style="display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 0.75rem; border-top: 1px solid var(--color-primary-border); padding-top: 0.75rem;">
+          <div>Transit Hops: <strong>${res.connectionCount}</strong></div>
+          <div>Total Transit Distance: <strong>${res.totalDistanceKm} km</strong></div>
+          <div>Est. Transit Cost: <strong>${WayfarerUI.formatMoney(res.totalEstimatedCost)}</strong></div>
+        </div>
+      `;
+    }
+
+    // -------------------------------------------------------------
+    // TAB 3: Greedy Recommendation Controller
+    // -------------------------------------------------------------
+    function initGreedyControls() {
+      document.getElementById('runGreedyBtn').addEventListener('click', async () => {
+        const start = document.getElementById('greedyStartSelect').value;
+        const category = document.getElementById('greedyCategorySelect').value;
+        const budget = parseFloat(document.getElementById('greedyBudgetInput').value) || 4500;
+
+        const btn = document.getElementById('runGreedyBtn');
+        btn.disabled = true;
+        btn.textContent = 'Calculating...';
+
+        try {
+          const res = await WayfarerAPI.getGreedyRecommendations({
+            startDestinationCode: start,
+            preferredCategory: category,
+            totalBudget: budget,
+            desiredStops: 4
+          });
+
+          displayGreedyResults(res);
+        } catch (err) {
+          alert('Greedy heuristic error: ' + err.message);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Compute Greedy Sequence →';
+        }
+      });
+    }
+
+    function displayGreedyResults(res) {
+      const container = document.getElementById('greedyResultsContainer');
+      const tbody = document.getElementById('greedyStepsTableBody');
+
+      container.style.display = 'block';
+
+      if (!res || !res.success || !res.stops || res.stops.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="text-center py-4">No suitable recommendations found within budget constraints.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = res.stops.map(s => {
+        const d = s.destination || {};
+        return `
+          <tr>
+            <td><span class="badge badge-primary">Step ${s.stepOrder}</span></td>
+            <td style="font-weight: 600; color: var(--color-primary);">
+              ${WayfarerUI.escape(d.name || 'Unknown')} (${d.destinationCode || ''})
+            </td>
+            <td><span class="badge badge-neutral">${WayfarerUI.escape(d.category || 'General')}</span></td>
+            <td>★ ${d.rating || '4.8'}</td>
+            <td style="font-weight: 600;">${WayfarerUI.formatMoney(d.estimatedCost)}</td>
+            <td><span class="badge badge-accent" style="font-size: 0.9rem;">${s.greedyScore}</span></td>
+            <td>${WayfarerUI.formatMoney(s.remainingBudgetAfter)}</td>
+            <td style="font-size: 0.85rem; color: var(--color-text-muted);">${WayfarerUI.escape(s.rationale || 'Locally optimal choice')}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>
+

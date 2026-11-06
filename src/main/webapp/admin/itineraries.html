@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Itineraries — Wayfarer Admin</title>
+  <link rel="stylesheet" href="../css/wayfarer.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231f3d2b'><path d='M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z'/></svg>">
+</head>
+<body class="admin-theme">
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <a href="dashboard.html" class="brand-link">
+          <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>
+          </svg>
+          <span class="brand-name">Wayfarer</span>
+        </a>
+        <span class="sidebar-badge">ADMIN</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span>Dashboard</span>
+        </a>
+        <a href="destinations.html" class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>Destinations</span>
+        </a>
+        <a href="connections.html" class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          <span>Connections</span>
+        </a>
+        <a href="users.html" class="nav-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span>Users</span>
+        </a>
+        <a href="itineraries.html" class="nav-item active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          <span>All Itineraries</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-chip">
+          <div class="user-avatar" id="sidebarAvatar">A</div>
+          <div class="user-info">
+            <div class="user-name" id="sidebarUserName">Admin</div>
+            <div class="user-role">Administrator</div>
+          </div>
+        </div>
+        <button id="logoutBtn" class="btn-logout" title="Log out">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div>
+          <h1 class="page-title">Platform Itineraries</h1>
+          <p class="page-subtitle">Overview of traveler journeys, planned stops, and budgets</p>
+        </div>
+        <div class="topbar-actions">
+          <div class="search-input-wrapper">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="searchInput" class="form-control" placeholder="Search itineraries or users...">
+          </div>
+        </div>
+      </header>
+
+      <div class="content-body">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2 class="card-title">All Traveler Itineraries</h2>
+              <p class="card-subtitle">Showing all planned trips maintained in the Wayfarer database</p>
+            </div>
+            <div class="filter-pills">
+              <button class="filter-pill active" data-filter="all">All</button>
+              <button class="filter-pill" data-filter="active">Active</button>
+              <button class="filter-pill" data-filter="completed">Completed</button>
+            </div>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Trip Name</th>
+                    <th>Traveler</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Stops</th>
+                    <th>Budget</th>
+                    <th>Est. Cost</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                  </tr>
+                </thead>
+                <tbody id="itinerariesTableBody">
+                  <tr>
+                    <td colspan="9" class="text-center py-4">
+                      <div class="spinner-small"></div> Loading itineraries...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="toastContainer" class="toast-container"></div>
+
+  <script src="../js/wayfarer-api.js"></script>
+  <script src="../js/wayfarer-common.js"></script>
+  <script>
+    let allItineraries = [];
+    let currentFilter = 'all';
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const user = await WayfarerCommon.requireAdmin();
+      if (!user) return;
+
+      loadItineraries();
+
+      document.getElementById('searchInput').addEventListener('input', (e) => {
+        filterTable(e.target.value.toLowerCase());
+      });
+
+      document.querySelectorAll('.filter-pill').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentFilter = btn.dataset.filter;
+          filterTable(document.getElementById('searchInput').value.toLowerCase());
+        });
+      });
+    });
+
+    async function loadItineraries() {
+      try {
+        const res = await WayfarerAPI.admin.getAllItineraries();
+        allItineraries = res.itineraries || [];
+        renderTable(allItineraries);
+      } catch (err) {
+        WayfarerCommon.showToast(err.message || 'Failed to load itineraries', 'error');
+        document.getElementById('itinerariesTableBody').innerHTML = `
+          <tr><td colspan="9" class="text-center py-4 text-muted">Error loading itineraries.</td></tr>
+        `;
+      }
+    }
+
+    function filterTable(searchTerm) {
+      const filtered = allItineraries.filter(it => {
+        const matchesFilter = currentFilter === 'all' || 
+          (currentFilter === 'active' && it.status !== 'completed' && it.status !== 'cancelled') ||
+          (currentFilter === 'completed' && it.status === 'completed');
+        
+        const tripName = (it.tripName || '').toLowerCase();
+        const travelerName = (it.travelerName || it.username || '').toLowerCase();
+        const matchesSearch = tripName.includes(searchTerm) || travelerName.includes(searchTerm);
+
+        return matchesFilter && matchesSearch;
+      });
+      renderTable(filtered);
+    }
+
+    function renderTable(list) {
+      const tbody = document.getElementById('itinerariesTableBody');
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-muted">No itineraries found</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.map(it => {
+        const traveler = it.travelerName || it.username || ('User #' + it.userId);
+        const stopsCount = it.stops ? it.stops.length : (it.stopCount || 0);
+        const budgetFormatted = WayfarerCommon.formatCurrency(it.budget || 0);
+        const costFormatted = WayfarerCommon.formatCurrency(it.totalEstimatedCost || 0);
+        const statusBadge = it.status === 'completed' 
+          ? '<span class="badge badge-success">Completed</span>' 
+          : '<span class="badge badge-primary">Active</span>';
+
+        return `
+          <tr>
+            <td>
+              <div class="font-medium text-dark">${WayfarerCommon.escapeHtml(it.tripName || 'Untitled Trip')}</div>
+              <div class="text-xs text-muted">ID #${it.id}</div>
+            </td>
+            <td>
+              <span class="user-chip-inline">
+                <span class="avatar-dot"></span>
+                ${WayfarerCommon.escapeHtml(traveler)}
+              </span>
+            </td>
+            <td>${it.startDate || '—'}</td>
+            <td>${it.endDate || '—'}</td>
+            <td>
+              <span class="badge badge-neutral">${stopsCount} stop${stopsCount === 1 ? '' : 's'}</span>
+            </td>
+            <td class="font-mono">${budgetFormatted}</td>
+            <td class="font-mono ${it.totalEstimatedCost > it.budget && it.budget > 0 ? 'text-danger font-semibold' : ''}">${costFormatted}</td>
+            <td>${statusBadge}</td>
+            <td class="text-xs text-muted">${it.createdAt ? it.createdAt.substring(0, 10) : '—'}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+  </script>
+</body>
+</html>
